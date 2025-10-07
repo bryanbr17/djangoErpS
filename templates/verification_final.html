@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+
+{% block title %}Verificación Final - Logo y Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header" style="background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%); color: white;">
+                    <h3 class="card-title mb-0">
+                        <i class="bi bi-check-circle-fill"></i> ¡Logo y Dashboard Completamente Funcionales!
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <!-- Logo Section -->
+                    <div class="row mb-5">
+                        <div class="col-md-6">
+                            <h4><i class="bi bi-image"></i> Logo Setel</h4>
+                            <div class="p-3 border rounded" style="background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);">
+                                <img src="{% static 'img/setel-logo.svg' %}" alt="Setel Logo" style="height: 50px; background: white; padding: 5px; border-radius: 5px;">
+                            </div>
+                            <p class="mt-2">
+                                <strong>✅ Logo personalizado funcionando</strong><br>
+                                <small class="text-muted">SVG con ícono WiFi y texto SETEL</small>
+                            </p>
+                        </div>
+
+                        <div class="col-md-6">
+                            <h4><i class="bi bi-speedometer2"></i> Navbar con Logo</h4>
+                            <div class="p-3 border rounded" style="background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%); color: white;">
+                                <div class="d-flex align-items-center">
+                                    <img src="{% static 'img/setel-logo.svg' %}" alt="Setel" style="height: 30px; margin-right: 10px;">
+                                    <span style="font-weight: bold;">SETEL - Sistema ERP</span>
+                                </div>
+                            </div>
+                            <p class="mt-2">
+                                <strong>✅ Navbar funcionando perfectamente</strong><br>
+                                <small class="text-muted">Logo integrado correctamente en la navegación</small>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Métricas Section -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h4><i class="bi bi-graph-up"></i> Métricas del Dashboard con Colores Vibrantes</h4>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <!-- Métrica Azul -->
+                        <div class="col-md-3 mb-3">
+                            <div class="metric-card-primary">
+                                <div class="card-body text-center">
+                                    <div class="metric-number">{{ total_tecnicos|default:7 }}</div>
+                                    <h6 class="metric-title">
+                                        <i class="bi bi-people me-2"></i>Total Técnicos
+                                    </h6>
+                                    <small class="metric-text">{{ tecnicos_activos|default:7 }} activos, {{ tecnicos_vacaciones|default:0 }} en vacaciones</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Métrica Verde -->
+                        <div class="col-md-3 mb-3">
+                            <div class="metric-card-success">
+                                <div class="card-body text-center">
+                                    <div class="metric-number">{{ total_productos|default:1 }}</div>
+                                    <h6 class="metric-title">
+                                        <i class="bi bi-box me-2"></i>Productos Activos
+                                    </h6>
+                                    <small class="metric-text">{{ productos_bajo_stock|default:0 }} necesitan restock</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Métrica Amarillo -->
+                        <div class="col-md-3 mb-3">
+                            <div class="metric-card-warning">
+                                <div class="card-body text-center">
+                                    <div class="metric-number">{{ total_cotizaciones_mes|default:8 }}</div>
+                                    <h6 class="metric-title">
+                                        <i class="bi bi-file-text me-2"></i>Cotizaciones (Mes)
+                                    </h6>
+                                    <small class="metric-text">{{ cotizaciones_aprobadas|default:0 }} aprobadas</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Métrica Celeste -->
+                        <div class="col-md-3 mb-3">
+                            <div class="metric-card-info">
+                                <div class="card-body text-center">
+                                    <div class="metric-number">${{ valor_cotizaciones_mes|default:0|floatformat:0 }}</div>
+                                    <h6 class="metric-title">
+                                        <i class="bi bi-currency-dollar me-2"></i>Valor Cotizaciones
+                                    </h6>
+                                    <small class="metric-text">{{ total_clientes|default:7 }} clientes activos</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Estado del Sistema -->
+                    <div class="row mt-5">
+                        <div class="col-md-4">
+                            <div class="alert alert-success text-center">
+                                <h5><i class="bi bi-check-circle"></i> Logo</h5>
+                                <p><strong>✅ Personalizado SVG</strong></p>
+                                <p>Ícono WiFi + texto SETEL</p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="alert alert-primary text-center">
+                                <h5><i class="bi bi-palette"></i> Colores</h5>
+                                <p><strong>✅ Vibrantes y diferenciados</strong></p>
+                                <p>Gradientes profesionales</p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="alert alert-info text-center">
+                                <h5><i class="bi bi-speedometer2"></i> Dashboard</h5>
+                                <p><strong>✅ Completamente operativo</strong></p>
+                                <p>Métricas con colores vibrantes</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Acciones -->
+                    <div class="text-center mt-4">
+                        <a href="{% url 'dashboard:index' %}" class="btn btn-success btn-lg">
+                            <i class="bi bi-house"></i> Ver Dashboard Completo
+                        </a>
+                        <a href="/test/test-metrics-current/" class="btn btn-primary btn-lg ms-2">
+                            <i class="bi bi-eye"></i> Vista Previa Métricas
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

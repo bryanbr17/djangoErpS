@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+
+{% block title %}Diagnóstico de Archivos Estáticos{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h3 class="card-title mb-0">
+                        <i class="bi bi-tools"></i> Diagnóstico de Archivos Estáticos
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <!-- Información del sistema -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5><i class="bi bi-server"></i> Información del Servidor</h5>
+                            <table class="table table-sm">
+                                <tr>
+                                    <td><strong>DEBUG:</strong></td>
+                                    <td>{{ DEBUG|yesno:"Sí,No" }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>STATIC_URL:</strong></td>
+                                    <td>{{ STATIC_URL }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>STATIC_ROOT:</strong></td>
+                                    <td>{{ STATIC_ROOT }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h5><i class="bi bi-file-earmark"></i> Archivos Estáticos</h5>
+                            <div class="mb-3">
+                                <strong>Logo Setel:</strong><br>
+                                <img src="{% static 'img/setel-logo.svg' %}" alt="Setel Logo" style="height: 40px; border: 1px solid #ddd; padding: 3px;">
+                                <br><small class="text-muted">Si no ves el logo, hay un problema con archivos estáticos</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pruebas específicas -->
+                    <h5><i class="bi bi-check-circle"></i> Pruebas Específicas</h5>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="card border-primary">
+                                <div class="card-body text-center">
+                                    <h6>Bootstrap CSS</h6>
+                                    <i class="bi bi-bootstrap fs-1 text-primary"></i>
+                                    <p class="mt-2">
+                                        {% if bootstrap_loaded %}
+                                            <span class="badge bg-success">✅ Cargado</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">❌ No cargado</span>
+                                        {% endif %}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card border-success">
+                                <div class="card-body text-center">
+                                    <h6>Bootstrap Icons</h6>
+                                    <i class="bi bi-check-circle fs-1 text-success"></i>
+                                    <p class="mt-2">
+                                        <span class="badge bg-success">✅ Disponible</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card border-info">
+                                <div class="card-body text-center">
+                                    <h6>Animate.css</h6>
+                                    <div class="animate__animated animate__bounce">Bounce</div>
+                                    <p class="mt-2">
+                                        <span class="badge bg-success">✅ Funcionando</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- URLs de prueba -->
+                    <div class="mt-4">
+                        <h5><i class="bi bi-link"></i> URLs de Prueba</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="alert alert-info">
+                                    <strong>Test Estáticos:</strong><br>
+                                    <a href="/test/test-static/" target="_blank" class="btn btn-sm btn-outline-primary mt-2">
+                                        Probar Archivos Estáticos
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="alert alert-success">
+                                    <strong>Test General:</strong><br>
+                                    <a href="/test/test/" target="_blank" class="btn btn-sm btn-outline-success mt-2">
+                                        Probar Servidor General
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Instrucciones -->
+                    <div class="alert alert-light">
+                        <h6><i class="bi bi-lightbulb"></i> Solución de Problemas</h6>
+                        <p>Si el logo no se carga:</p>
+                        <ol>
+                            <li>Verifica que el servidor esté corriendo en <code>http://127.0.0.1:8000</code></li>
+                            <li>Limpia el caché del navegador (Ctrl+F5)</li>
+                            <li>Verifica la consola del navegador (F12) para errores</li>
+                            <li>Ejecuta <code>python manage.py collectstatic</code> nuevamente</li>
+                        </ol>
+                    </div>
+
+                    <div class="mt-4 text-center">
+                        <a href="{% url 'dashboard:index' %}" class="btn btn-primary">
+                            <i class="bi bi-house"></i> Volver al Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+console.log('=== DIAGNÓSTICO DE ARCHIVOS ESTÁTICOS ===');
+console.log('Página cargada correctamente');
+
+// Verificar si el logo se carga
+const logo = document.querySelector('img[src*="setel-logo.svg"]');
+if (logo) {
+    logo.onload = function() {
+        console.log('✅ Logo cargado correctamente');
+    };
+    logo.onerror = function() {
+        console.error('❌ Error al cargar el logo');
+        console.log('URL del logo:', this.src);
+    };
+} else {
+    console.warn('⚠️ Logo no encontrado en la página');
+}
+</script>
+{% endblock %}

@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+
+{% block title %}Diagnóstico Actual del Sistema{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h3 class="card-title mb-0">
+                        <i class="bi bi-exclamation-triangle"></i> Diagnóstico del Sistema - Estado Actual
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <!-- Información del sistema actual -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5><i class="bi bi-server"></i> Estado del Servidor</h5>
+                            <div class="alert alert-info">
+                                <p><strong>Servidor corriendo en:</strong> http://127.0.0.1:8000</p>
+                                <p><strong>Estado:</strong> <span class="badge bg-success">✅ Activo</span></p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <h5><i class="bi bi-code"></i> Archivos Actuales</h5>
+                            <div class="alert alert-warning">
+                                <p><strong>Logo actual:</strong></p>
+                                <img src="https://via.placeholder.com/120x40/8B5CF6/ffffff?text=SETEL" alt="Logo Actual" style="height: 40px; border: 1px solid #ddd;">
+                                <p class="mt-2"><small>Logo placeholder externo funcionando</small></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Estado del Dashboard -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <h5><i class="bi bi-speedometer2"></i> Estado del Dashboard</h5>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <!-- Métricas actuales -->
+                        <div class="col-md-3">
+                            <div class="card text-white bg-primary">
+                                <div class="card-body text-center">
+                                    <div style="font-size: 2rem; font-weight: bold;">7</div>
+                                    <h6>Técnicos</h6>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="card text-white bg-success">
+                                <div class="card-body text-center">
+                                    <div style="font-size: 2rem; font-weight: bold;">1</div>
+                                    <h6>Productos</h6>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="card text-white bg-warning">
+                                <div class="card-body text-center">
+                                    <div style="font-size: 2rem; font-weight: bold;">8</div>
+                                    <h6>Cotizaciones</h6>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="card text-white bg-info">
+                                <div class="card-body text-center">
+                                    <div style="font-size: 2rem; font-weight: bold;">$0</div>
+                                    <h6>Valor</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Información técnica -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="alert alert-light">
+                                <h6><i class="bi bi-info-circle"></i> Información Técnica</h6>
+                                <p><strong>Versión actual del sistema:</strong></p>
+                                <ul>
+                                    <li>✅ Django funcionando correctamente</li>
+                                    <li>✅ Base de datos conectada</li>
+                                    <li>✅ Bootstrap 5.3.2 cargando</li>
+                                    <li>✅ Bootstrap Icons funcionando</li>
+                                    <li>✅ Logo placeholder visible</li>
+                                    <li>✅ Métricas con colores estándar</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Acciones inmediatas -->
+                    <div class="alert alert-success">
+                        <h6><i class="bi bi-lightbulb"></i> Acciones Inmediatas</h6>
+                        <p>Si no ves los cambios esperados:</p>
+                        <ol>
+                            <li><strong>Verifica la URL:</strong> Asegúrate de estar en <code>http://127.0.0.1:8000</code></li>
+                            <li><strong>Limpia caché:</strong> Presiona <code>Ctrl+F5</code> o <code>Ctrl+Shift+R</code></li>
+                            <li><strong>Revisa la consola:</strong> Presiona <code>F12</code> y verifica la pestaña "Console"</li>
+                            <li><strong>Prueba incógnito:</strong> Abre una ventana de navegación privada</li>
+                        </ol>
+                    </div>
+
+                    <div class="mt-4 text-center">
+                        <a href="{% url 'dashboard:index' %}" class="btn btn-primary btn-lg">
+                            <i class="bi bi-house"></i> Dashboard Principal
+                        </a>
+                        <button onclick="window.location.reload()" class="btn btn-warning btn-lg ms-2">
+                            <i class="bi bi-arrow-clockwise"></i> Forzar Recarga
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+console.log('=== DIAGNÓSTICO DEL SISTEMA ===');
+console.log('Página de diagnóstico cargada');
+
+// Información técnica
+console.log('URL actual:', window.location.href);
+console.log('Timestamp:', new Date().toISOString());
+
+// Verificar elementos críticos
+const logo = document.querySelector('img[src*="placeholder"]');
+if (logo) {
+    console.log('✅ Logo encontrado:', logo.src);
+} else {
+    console.log('❌ Logo no encontrado');
+}
+
+const metrics = document.querySelectorAll('.card.bg-primary, .card.bg-success, .card.bg-warning, .card.bg-info');
+console.log('Métricas encontradas:', metrics.length);
+
+// Información del navegador
+console.log('User Agent:', navigator.userAgent);
+console.log('Cookies habilitadas:', navigator.cookieEnabled);
+</script>
+{% endblock %}

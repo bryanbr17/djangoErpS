@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ tecnico.nombre_completo }} - Técnicos{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard:index' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'tecnicos:list' %}">Técnicos</a></li>
+                    <li class="breadcrumb-item active">{{ tecnico.codigo_empleado }}</li>
+                </ol>
+            </nav>
+            <h1 class="h3 mb-0">{{ tecnico.nombre_completo }}</h1>
+            <p class="text-muted">Código: {{ tecnico.codigo_empleado }}</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    {% if tecnico.foto %}
+                        <img src="{{ tecnico.foto.url }}" class="rounded-circle mb-3" width="120" height="120">
+                    {% else %}
+                        <div class="bg-secondary rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 120px; height: 120px;">
+                            <i class="bi bi-person text-white" style="font-size: 3rem;"></i>
+                        </div>
+                    {% endif %}
+                    <h5>{{ tecnico.nombre_completo }}</h5>
+                    <p class="text-muted">{{ tecnico.codigo_empleado }}</p>
+                    <span class="badge bg-{% if tecnico.estado == 'activo' %}success{% elif tecnico.estado == 'vacaciones' %}warning{% else %}secondary{% endif %} fs-6">
+                        {{ tecnico.get_estado_display }}
+                    </span>
+                    <div class="mt-3">
+                        <a href="{% url 'tecnicos:edit' tecnico.pk %}" class="btn btn-sm btn-primary">
+                            <i class="bi bi-pencil"></i> Editar
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-bs-toggle="tab" href="#info">Información</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#documentos">Documentos</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#vacaciones">Vacaciones</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="info">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Información Personal</h6>
+                                    <table class="table table-sm">
+                                        <tr>
+                                            <td><strong>Email:</strong></td>
+                                            <td>{{ tecnico.usuario.email|default:"No especificado" }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Teléfono:</strong></td>
+                                            <td>{{ tecnico.telefono|default:"No especificado" }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Dirección:</strong></td>
+                                            <td>{{ tecnico.direccion|default:"No especificada" }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Fecha Nacimiento:</strong></td>
+                                            <td>{{ tecnico.fecha_nacimiento|default:"No especificada" }}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Información Laboral</h6>
+                                    <table class="table table-sm">
+                                        <tr>
+                                            <td><strong>Fecha Ingreso:</strong></td>
+                                            <td>{{ tecnico.fecha_ingreso }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Estado:</strong></td>
+                                            <td>{{ tecnico.get_estado_display }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Especialidades:</strong></td>
+                                            <td>
+                                                {% for especialidad in tecnico.especialidades.all %}
+                                                    <span class="badge bg-info me-1">{{ especialidad.nombre }}</span>
+                                                {% empty %}
+                                                    Sin especialidades
+                                                {% endfor %}
+                                            </td>
+                                        </tr>
+                                        {% if tecnico.salario_base %}
+                                        <tr>
+                                            <td><strong>Salario Base:</strong></td>
+                                            <td>${{ tecnico.salario_base|floatformat:0 }}</td>
+                                        </tr>
+                                        {% endif %}
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <h6>Observaciones</h6>
+                                <p>{{ tecnico.observaciones }}</p>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="documentos">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h6 class="mb-0">Documentos</h6>
+                                <a href="{% url 'tecnicos:documento_upload' tecnico.pk %}" class="btn btn-sm btn-primary">
+                                    <i class="bi bi-upload"></i> Subir Documento
+                                </a>
+                            </div>
+                            {% if documentos %}
+                                <div class="list-group">
+                                    {% for documento in tecnico.documentos.all %}
+                                    <div class="list-group-item">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h6 class="mb-1">{{ documento.nombre }}</h6>
+                                                <small class="text-muted">{{ documento.get_tipo_display }} - {{ documento.fecha_subida }}</small>
+                                            </div>
+                                            <a href="{{ documento.archivo.url }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                                <i class="bi bi-download"></i> Descargar
+                                            </a>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <p class="text-muted">No hay documentos cargados</p>
+                            {% endif %}
+                        </div>
+
+                        <div class="tab-pane fade" id="vacaciones">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h6 class="mb-0">Historial de Vacaciones</h6>
+                                <a href="{% url 'tecnicos:vacaciones_create' tecnico.pk %}" class="btn btn-sm btn-primary">
+                                    <i class="bi bi-calendar-plus"></i> Nueva Solicitud
+                                </a>
+                            </div>
+                            {% if vacaciones %}
+                                <div class="list-group">
+                                    {% for vacacion in tecnico.vacaciones.all %}
+                                    <div class="list-group-item">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h6 class="mb-1">{{ vacacion.fecha_inicio }} - {{ vacacion.fecha_fin }}</h6>
+                                                <small class="text-muted">{{ vacacion.dias_solicitados }} días</small>
+                                            </div>
+                                            <span class="badge bg-{% if vacacion.estado == 'aprobada' %}success{% elif vacacion.estado == 'pendiente' %}warning{% else %}secondary{% endif %}">
+                                                {{ vacacion.get_estado_display }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <p class="text-muted">No hay solicitudes de vacaciones</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

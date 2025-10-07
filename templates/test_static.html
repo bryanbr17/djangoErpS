@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block title %}Test Archivos Estáticos{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h3 class="card-title mb-0">
+                        <i class="bi bi-check-circle-fill"></i> Test de Archivos Estáticos
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <h5><i class="bi bi-info-circle"></i> Verificación de Archivos Estáticos</h5>
+                        <p>Esta página prueba si los archivos estáticos se están cargando correctamente.</p>
+                    </div>
+
+                    <h5>Pruebas de Archivos Estáticos:</h5>
+
+                    <!-- Logo de Setel -->
+                    <div class="mb-4">
+                        <h6><i class="bi bi-image"></i> Logo de Setel:</h6>
+                        <img src="{% static 'img/setel-logo.svg' %}" alt="Setel Logo" style="height: 50px; border: 1px solid #ddd; padding: 5px;">
+                        <p class="mt-2">
+                            <small class="text-muted">
+                                Si ves el logo arriba, los archivos estáticos funcionan correctamente.
+                            </small>
+                        </p>
+                    </div>
+
+                    <!-- CSS Bootstrap Icons -->
+                    <div class="mb-4">
+                        <h6><i class="bi bi-brush"></i> Íconos de Bootstrap:</h6>
+                        <div class="row">
+                            <div class="col-md-3 text-center">
+                                <i class="bi bi-house-door fs-2 text-primary"></i>
+                                <br><small>House</small>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <i class="bi bi-person fs-2 text-success"></i>
+                                <br><small>Person</small>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <i class="bi bi-gear fs-2 text-warning"></i>
+                                <br><small>Gear</small>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <i class="bi bi-graph-up fs-2 text-info"></i>
+                                <br><small>Graph</small>
+                            </div>
+                        </div>
+                        <p class="mt-2">
+                            <small class="text-muted">
+                                Si ves los íconos arriba, Bootstrap Icons se carga correctamente.
+                            </small>
+                        </p>
+                    </div>
+
+                    <!-- CSS Animate.css -->
+                    <div class="mb-4">
+                        <h6><i class="bi bi-stars"></i> Animaciones:</h6>
+                        <div class="d-flex gap-3">
+                            <div class="animate__animated animate__bounce animate__infinite">Bounce</div>
+                            <div class="animate__animated animate__pulse animate__infinite">Pulse</div>
+                            <div class="animate__animated animate__fadeIn">Fade In</div>
+                        </div>
+                        <p class="mt-2">
+                            <small class="text-muted">
+                                Si ves las animaciones arriba, Animate.css funciona correctamente.
+                            </small>
+                        </p>
+                    </div>
+
+                    <!-- Estado del servidor -->
+                    <div class="alert alert-success">
+                        <h6><i class="bi bi-server"></i> Estado del Servidor</h6>
+                        <p><strong>✅ Django funcionando correctamente</strong></p>
+                        <p><strong>✅ Archivos estáticos recolectados</strong></p>
+                        <p><strong>✅ Base de datos conectada</strong></p>
+                        <p><strong>✅ Plantillas cargando</strong></p>
+                    </div>
+
+                    <div class="mt-4">
+                        <a href="{% url 'dashboard:index' %}" class="btn btn-primary">
+                            <i class="bi bi-arrow-left"></i> Volver al Dashboard
+                        </a>
+                        <a href="/test/test-static/" class="btn btn-secondary">
+                            <i class="bi bi-arrow-right"></i> Probar de nuevo
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

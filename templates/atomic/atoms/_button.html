@@ -1,0 +1,8 @@
+<!-- Componente Atómico: Button (para inclusion tags) -->
+{% if button %}
+<button type="{{ button.type }}" class="btn{% if button.variant %} btn-{{ button.variant }}{% endif %}{% if button.size %} btn-{{ button.size }}{% endif %}{% if button.disabled %} disabled{% endif %}{% if button.class %} {{ button.class }}{% endif %}"
+        {% if button.disabled %}disabled{% endif %}
+        {% for key, value in button.kwargs.items() %}{{ key }}{% if value is not none %}="{{ value }}"{% endif %} {% endfor %}>
+    {{ button.content|default:"" }}
+</button>
+{% endif %}

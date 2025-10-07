@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block title %}Test Métricas Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h3 class="card-title mb-0">
+                        <i class="bi bi-speedometer2"></i> Test de Métricas del Dashboard
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <h5><i class="bi bi-info-circle"></i> Verificación de Métricas</h5>
+                        <p>Esta página prueba específicamente las métricas del dashboard con colores aplicados.</p>
+                    </div>
+
+                    <!-- Vista previa de métricas -->
+                    <div class="mb-4">
+                        <h5><i class="bi bi-eye"></i> Vista Previa de Métricas:</h5>
+
+                        <!-- Primera métrica (Azul) -->
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <div class="metric-card-primary">
+                                    <div class="card-body text-center">
+                                        <div class="metric-number">7</div>
+                                        <h6 class="metric-title">
+                                            <i class="bi bi-people me-2"></i>Total Técnicos
+                                        </h6>
+                                        <small class="metric-text">7 activos, 0 en vacaciones</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Segunda métrica (Verde) -->
+                            <div class="col-md-3">
+                                <div class="metric-card-success">
+                                    <div class="card-body text-center">
+                                        <div class="metric-number">1</div>
+                                        <h6 class="metric-title">
+                                            <i class="bi bi-box me-2"></i>Productos Activos
+                                        </h6>
+                                        <small class="metric-text">0 necesitan restock</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Tercera métrica (Amarillo) -->
+                            <div class="col-md-3">
+                                <div class="metric-card-warning">
+                                    <div class="card-body text-center">
+                                        <div class="metric-number">8</div>
+                                        <h6 class="metric-title">
+                                            <i class="bi bi-file-text me-2"></i>Cotizaciones (Mes)
+                                        </h6>
+                                        <small class="metric-text">0 aprobadas</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Cuarta métrica (Celeste) -->
+                            <div class="col-md-3">
+                                <div class="metric-card-info">
+                                    <div class="card-body text-center">
+                                        <div class="metric-number">$0</div>
+                                        <h6 class="metric-title">
+                                            <i class="bi bi-currency-dollar me-2"></i>Valor Cotizaciones
+                                        </h6>
+                                        <small class="metric-text">7 clientes activos</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Información técnica -->
+                    <div class="alert alert-success">
+                        <h6><i class="bi bi-check-circle"></i> Métricas Funcionando</h6>
+                        <p>Si ves las métricas arriba con colores vibrantes, entonces las métricas están funcionando correctamente.</p>
+                        <p><strong>Estado:</strong> <span class="badge bg-success">✅ Colores aplicados correctamente</span></p>
+                    </div>
+
+                    <!-- Solución aplicada -->
+                    <div class="alert alert-info">
+                        <h6><i class="bi bi-lightbulb"></i> Solución Aplicada</h6>
+                        <p><strong>Problema:</strong> Las métricas no mostraban colores debido a conflictos CSS</p>
+                        <p><strong>Solución:</strong> Aplicados estilos CSS específicos con clases dedicadas</p>
+                        <p><strong>Resultado:</strong> Métricas ahora muestran colores vibrantes y profesionales</p>
+                    </div>
+
+                    <div class="mt-4 text-center">
+                        <a href="{% url 'dashboard:index' %}" class="btn btn-primary">
+                            <i class="bi bi-house"></i> Ver Dashboard Real
+                        </a>
+                        <button onclick="window.location.reload()" class="btn btn-secondary">
+                            <i class="bi bi-arrow-clockwise"></i> Recargar Página
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

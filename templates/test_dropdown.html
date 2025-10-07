@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block title %}Test Dropdown Logout{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h3 class="card-title mb-0">
+                        <i class="bi bi-gear"></i> Test del Dropdown de Logout
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <h5><i class="bi bi-info-circle"></i> Verificación del Dropdown</h5>
+                        <p>Esta página prueba específicamente el funcionamiento del dropdown del botón de logout.</p>
+                    </div>
+
+                    <!-- Información del dropdown actual -->
+                    <div class="mb-4">
+                        <h6><i class="bi bi-code"></i> Estado Actual del Dropdown:</h6>
+                        <div class="bg-light p-3 rounded">
+                            <p><strong>Clases aplicadas:</strong> <code>dropdown-menu</code> (sin <code>dropdown-menu-end</code>)</p>
+                            <p><strong>Posición:</strong> <code>Izquierda (por defecto de Bootstrap)</code></p>
+                            <p><strong>Estado:</strong> <span class="badge bg-success">✅ Corregido</span></p>
+                        </div>
+                    </div>
+
+                    <!-- Dropdown simulado -->
+                    <div class="mb-4">
+                        <h6><i class="bi bi-eye"></i> Vista Previa del Dropdown:</h6>
+                        <div class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%); padding: 10px; border-radius: 5px;">
+                            <div class="navbar-nav ms-auto">
+                                <div class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="bi bi-person-circle"></i> Usuario de Prueba
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="#"><i class="bi bi-person"></i> Perfil</a></li>
+                                        <li><a class="dropdown-item" href="#"><i class="bi bi-gear"></i> Configuración</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item" href="/auth/logout/"><i class="bi bi-box-arrow-right"></i> Cerrar Sesión</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Problema original identificado -->
+                    <div class="alert alert-success">
+                        <h6><i class="bi bi-check-circle"></i> Problema Solucionado</h6>
+                        <p><strong>Problema original:</strong> El dropdown estaba "corrido para el lado" debido a la clase <code>dropdown-menu-end</code></p>
+                        <p><strong>Solución aplicada:</strong> Removida la clase <code>dropdown-menu-end</code> para usar posicionamiento por defecto</p>
+                        <p><strong>Resultado:</strong> El dropdown ahora se posiciona correctamente a la izquierda del botón</p>
+                    </div>
+
+                    <!-- Instrucciones -->
+                    <div class="alert alert-light">
+                        <h6><i class="bi bi-lightbulb"></i> Cómo Probar</h6>
+                        <ol>
+                            <li>Ve al Dashboard o cualquier página autenticada</li>
+                            <li>Busca el botón de usuario en la esquina superior derecha</li>
+                            <li>Haz clic en el botón para abrir el dropdown</li>
+                            <li>Verifica que el menú aparezca correctamente posicionado</li>
+                            <li>Prueba que el botón "Cerrar Sesión" funcione correctamente</li>
+                        </ol>
+                    </div>
+
+                    <div class="mt-4 text-center">
+                        <a href="{% url 'dashboard:index' %}" class="btn btn-primary">
+                            <i class="bi bi-house"></i> Ir al Dashboard
+                        </a>
+                        <button onclick="window.location.reload()" class="btn btn-secondary">
+                            <i class="bi bi-arrow-clockwise"></i> Recargar Página
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+console.log('=== TEST DEL DROPDOWN DE LOGOUT ===');
+console.log('Página de test cargada');
+
+// Información sobre el dropdown
+const dropdownInfo = {
+    problema: 'Dropdown estaba corrido para el lado',
+    causa: 'Clase dropdown-menu-end causaba posicionamiento incorrecto',
+    solucion: 'Removida la clase dropdown-menu-end',
+    resultado: 'Dropdown ahora se posiciona correctamente'
+};
+
+console.log('Información del dropdown:', dropdownInfo);
+</script>
+{% endblock %}

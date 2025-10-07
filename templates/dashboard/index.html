@@ -1,0 +1,269 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - Setel ERP{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="h3 mb-0"><i class="bi bi-speedometer2"></i> Dashboard</h1>
+            <p class="text-muted">Resumen general del sistema ERP</p>
+        </div>
+    </div>
+
+    <!-- Métricas principales -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-white" style="background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%); border-radius: 15px;">
+                <div class="card-body text-center">
+                    <div style="font-size: 2.5rem; font-weight: bold; margin-bottom: 0.5rem;">{{ total_tecnicos }}</div>
+                    <h6 style="opacity: 0.9; font-size: 0.9rem; margin-bottom: 0.5rem;">
+                        <i class="bi bi-people"></i> Total Técnicos
+                    </h6>
+                    <small style="opacity: 0.8; font-size: 0.75rem;">{{ tecnicos_activos }} activos, {{ tecnicos_vacaciones }} en vacaciones</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card text-white" style="background: linear-gradient(135deg, #10B981 0%, #059669 100%); border-radius: 15px;">
+                <div class="card-body text-center">
+                    <div style="font-size: 2.5rem; font-weight: bold; margin-bottom: 0.5rem;">{{ total_productos }}</div>
+                    <h6 style="opacity: 0.9; font-size: 0.9rem; margin-bottom: 0.5rem;">
+                        <i class="bi bi-box"></i> Productos Activos
+                    </h6>
+                    <small style="opacity: 0.8; font-size: 0.75rem;">{{ productos_bajo_stock }} necesitan restock</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card text-white" style="background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); border-radius: 15px;">
+                <div class="card-body text-center">
+                    <div style="font-size: 2.5rem; font-weight: bold; margin-bottom: 0.5rem;">{{ total_cotizaciones_mes }}</div>
+                    <h6 style="opacity: 0.9; font-size: 0.9rem; margin-bottom: 0.5rem;">
+                        <i class="bi bi-file-text"></i> Cotizaciones (Mes)
+                    </h6>
+                    <small style="opacity: 0.8; font-size: 0.75rem;">{{ cotizaciones_aprobadas }} aprobadas</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card text-white" style="background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%); border-radius: 15px;">
+                <div class="card-body text-center">
+                    <div style="font-size: 2.5rem; font-weight: bold; margin-bottom: 0.5rem;">${{ valor_cotizaciones_mes|floatformat:0 }}</div>
+                    <h6 style="opacity: 0.9; font-size: 0.9rem; margin-bottom: 0.5rem;">
+                        <i class="bi bi-currency-dollar"></i> Valor Cotizaciones
+                    </h6>
+                    <small style="opacity: 0.8; font-size: 0.75rem;">{{ total_clientes }} clientes activos</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenido principal -->
+    <div class="row">
+        <!-- Cotizaciones recientes -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-file-text"></i> Cotizaciones Recientes
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if cotizaciones_recientes %}
+                        {% for cotizacion in cotizaciones_recientes %}
+                        <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                            <div>
+                                <strong>COT-{{ cotizacion.numero }}</strong><br>
+                                <small class="text-muted">{{ cotizacion.cliente.nombre }}</small>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge {% if cotizacion.estado == 'aprobada' %}bg-success{% elif cotizacion.estado == 'pendiente' %}bg-warning{% else %}bg-danger{% endif %}">
+                                    {{ cotizacion.get_estado_display }}
+                                </span><br>
+                                <small class="text-muted">${{ cotizacion.total|floatformat:0 }}</small>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted text-center py-3"><i class="bi bi-info-circle"></i> No hay cotizaciones recientes</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Productos con bajo stock -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-exclamation-triangle"></i> Productos Bajo Stock
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if productos_restock %}
+                        {% for producto in productos_restock %}
+                        <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                            <div>
+                                <strong>{{ producto.codigo }}</strong><br>
+                                <small class="text-muted">{{ producto.nombre|truncatechars:30 }}</small>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge bg-danger">{{ producto.stock_actual }}</span><br>
+                                <small class="text-muted">Mín: {{ producto.stock_minimo }}</small>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-success text-center py-3">
+                            <i class="bi bi-check-circle"></i> Todos los productos tienen stock suficiente
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vacaciones pendientes -->
+    {% if vacaciones_pendientes %}
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-calendar-check"></i> Vacaciones Pendientes de Aprobación
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for vacacion in vacaciones_pendientes %}
+                        <div class="col-md-4 mb-3">
+                            <div class="card border-warning">
+                                <div class="card-body">
+                                    <h6 class="card-title">{{ vacacion.tecnico.nombre_completo }}</h6>
+                                    <p class="card-text">
+                                        <small class="text-muted">
+                                            {{ vacacion.fecha_inicio }} - {{ vacacion.fecha_fin }}<br>
+                                            {{ vacacion.dias_solicitados }} días
+                                        </small>
+                                    </p>
+                                    <a href="{% url 'tecnicos:vacaciones_detail' vacacion.pk %}" class="btn btn-sm btn-warning">
+                                        <i class="bi bi-eye"></i> Revisar
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Gráficos -->
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-graph-up"></i> Cotizaciones por Estado
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="cotizacionesChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-bar-chart"></i> Ventas Mensuales
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="ventasChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Gráfico de cotizaciones por estado
+const ctx1 = document.getElementById('cotizacionesChart').getContext('2d');
+const cotizacionesChart = new Chart(ctx1, {
+    type: 'doughnut',
+    data: {
+        labels: ['Borradores', 'Enviadas', 'Aprobadas', 'Rechazadas'],
+        datasets: [{
+            data: [15, 8, 12, 3],
+            backgroundColor: [
+                '#6c757d',
+                '#ffc107',
+                '#198754',
+                '#dc3545'
+            ]
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }
+});
+
+// Gráfico de ventas mensuales
+const ctx2 = document.getElementById('ventasChart').getContext('2d');
+const ventasChart = new Chart(ctx2, {
+    type: 'line',
+    data: {
+        labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
+        datasets: [{
+            label: 'Ventas',
+            data: [12000, 19000, 15000, 25000, 22000, 30000],
+            borderColor: '#0d6efd',
+            backgroundColor: 'rgba(13, 110, 253, 0.1)',
+            tension: 0.4,
+            fill: true
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    callback: function(value) {
+                        return '$' + value.toLocaleString();
+                    }
+                }
+            }
+        },
+        plugins: {
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        return context.dataset.label + ': $' + context.parsed.y.toLocaleString();
+                    }
+                }
+            }
+        }
+    }
+});
+</script>
+{% endblock %}

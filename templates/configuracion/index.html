@@ -1,0 +1,197 @@
+{% extends 'base.html' %}
+
+{% block title %}Configuración - Sistema ERP{% endblock %}
+
+{% block extra_css %}
+<style>
+    .configuration-card {
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .configuration-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+    
+    .configuration-card__circle {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 1rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+    }
+    
+    .configuration-card:hover .configuration-card__circle {
+        transform: scale(1.1);
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+    
+    .configuration-card__icon {
+        font-size: 2rem;
+        color: white;
+    }
+    
+    .category-section {
+        margin-bottom: 3rem;
+    }
+    
+    .category-title {
+        color: #495057;
+        border-bottom: 2px solid #e9ecef;
+        padding-bottom: 0.5rem;
+        margin-bottom: 2rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="h3 mb-0">
+                <i class="bi bi-gear"></i> Centro de Configuración
+            </h1>
+            <p class="text-muted">Configura y personaliza todos los aspectos de tu sistema ERP desde este panel central.</p>
+        </div>
+    </div>
+
+    {% for category_group in configuration_options %}
+    <div class="category-section">
+        <h4 class="category-title">
+            <i class="bi bi-folder"></i> {{ category_group.category }}
+        </h4>
+        
+        <div class="row">
+            {% for option in category_group.options %}
+            <div class="col-lg-2 col-md-3 col-sm-4 col-6 mb-4">
+                <div class="card configuration-card h-100" onclick="handleConfigurationClick('{{ option.id }}')">
+                    <div class="card-body text-center p-3">
+                        <div class="configuration-card__circle">
+                            <i class="configuration-card__icon {{ option.icon }}"></i>
+                        </div>
+                        <h6 class="card-title mb-2">{{ option.title }}</h6>
+                        <p class="card-text small text-muted">{{ option.description }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+
+    <!-- Información adicional -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card bg-light">
+                <div class="card-body text-center py-4">
+                    <h5 class="card-title">¿Necesitas ayuda con la configuración?</h5>
+                    <p class="card-text text-muted mb-4">
+                        Consulta nuestra documentación o contacta al soporte técnico para obtener asistencia.
+                    </p>
+                    <div class="d-flex justify-content-center gap-3">
+                        <button class="btn btn-primary">
+                            <i class="bi bi-book"></i> Ver Documentación
+                        </button>
+                        <button class="btn btn-outline-secondary">
+                            <i class="bi bi-headset"></i> Contactar Soporte
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estado del sistema -->
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="bi bi-info-circle"></i> Estado del Sistema
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-4">
+                            <div class="text-success">
+                                <i class="bi bi-check-circle display-6"></i>
+                                <p class="mb-0 small">Base de Datos</p>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="text-success">
+                                <i class="bi bi-check-circle display-6"></i>
+                                <p class="mb-0 small">Servidor Web</p>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="text-warning">
+                                <i class="bi bi-exclamation-circle display-6"></i>
+                                <p class="mb-0 small">Email SMTP</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="bi bi-clock"></i> Última Configuración
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <p class="mb-1"><strong>Configuración General</strong></p>
+                    <small class="text-muted">Actualizada hace 2 horas por {{ user.get_full_name|default:user.username }}</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function handleConfigurationClick(optionId) {
+    console.log('Configuración seleccionada:', optionId);
+    
+    // Mapeo de opciones a URLs
+    const urlMap = {
+        'general': '{% url "configuracion:general" %}',
+        'correo': '{% url "configuracion:correo" %}',
+        'seguridad': '{% url "configuracion:seguridad" %}',
+        'respaldos': '{% url "configuracion:respaldos" %}',
+        // Agregar más URLs según se implementen
+    };
+    
+    if (urlMap[optionId]) {
+        window.location.href = urlMap[optionId];
+    } else {
+        // Mostrar mensaje para opciones no implementadas
+        alert('Esta configuración estará disponible próximamente.');
+    }
+}
+
+// Animación de entrada
+document.addEventListener('DOMContentLoaded', function() {
+    const cards = document.querySelectorAll('.configuration-card');
+    cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+            card.style.transition = 'all 0.5s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
+});
+</script>
+{% endblock %}

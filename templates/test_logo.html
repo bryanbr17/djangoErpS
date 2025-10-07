@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block title %}Test Logo Setel{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title mb-0">
+                        <i class="bi bi-image"></i> Test del Logo Setel
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <h5><i class="bi bi-info-circle"></i> Verificación del Logo</h5>
+                        <p>Esta página prueba específicamente si el logo de Setel se carga correctamente.</p>
+                    </div>
+
+                    <!-- Logo en navbar (como aparece normalmente) -->
+                    <div class="mb-4">
+                        <h6><i class="bi bi-navbar"></i> Logo en Navbar:</h6>
+                        <div style="background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%); padding: 10px; border-radius: 5px;">
+                            <img src="{% static 'img/setel-logo.svg' %}" alt="Setel" style="height: 30px; background: white; padding: 2px; border-radius: 3px;">
+                        </div>
+                        <p class="mt-2">
+                            <small class="text-muted">
+                                Este es exactamente cómo aparece el logo en la barra de navegación.
+                            </small>
+                        </p>
+                    </div>
+
+                    <!-- Logo más grande para ver mejor -->
+                    <div class="mb-4">
+                        <h6><i class="bi bi-zoom-in"></i> Logo Ampliado:</h6>
+                        <img src="{% static 'img/setel-logo.svg' %}" alt="Setel Logo Grande" style="height: 80px; background: #f8f9fa; padding: 10px; border: 2px solid #8B5CF6; border-radius: 5px;">
+                        <p class="mt-2">
+                            <small class="text-muted">
+                                Logo ampliado para verificar que se carga correctamente.
+                            </small>
+                        </p>
+                    </div>
+
+                    <!-- Información técnica -->
+                    <div class="mb-4">
+                        <h6><i class="bi bi-code"></i> Información Técnica:</h6>
+                        <div class="bg-light p-3 rounded">
+                            <p><strong>URL del logo:</strong> <code>{% static 'img/setel-logo.svg' %}</code></p>
+                            <p><strong>Archivo físico:</strong> <code>static/img/setel-logo.svg</code></p>
+                            <p><strong>Tamaño esperado:</strong> <code>120x40 píxeles</code></p>
+                        </div>
+                    </div>
+
+                    <!-- Alternativas si no carga -->
+                    <div class="alert alert-warning">
+                        <h6><i class="bi bi-exclamation-triangle"></i> Si el logo no se carga:</h6>
+                        <ol>
+                            <li>Limpia el caché del navegador (Ctrl+F5)</li>
+                            <li>Verifica que el servidor esté corriendo en <code>http://127.0.0.1:8000</code></li>
+                            <li>Revisa la consola del navegador (F12) para errores</li>
+                            <li>Ejecuta <code>python manage.py collectstatic</code> nuevamente</li>
+                        </ol>
+                    </div>
+
+                    <div class="mt-4 text-center">
+                        <a href="{% url 'dashboard:index' %}" class="btn btn-primary">
+                            <i class="bi bi-house"></i> Volver al Dashboard
+                        </a>
+                        <button onclick="window.location.reload()" class="btn btn-secondary">
+                            <i class="bi bi-arrow-clockwise"></i> Recargar Página
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+console.log('=== TEST DEL LOGO SETEL ===');
+console.log('Página de test cargada');
+
+// Verificar carga del logo
+const logos = document.querySelectorAll('img[src*="setel-logo.svg"]');
+logos.forEach((logo, index) => {
+    console.log(`Logo ${index + 1}:`, logo.src);
+    
+    logo.onload = function() {
+        console.log(`✅ Logo ${index + 1} cargado correctamente`);
+    };
+    
+    logo.onerror = function() {
+        console.error(`❌ Error al cargar logo ${index + 1}`);
+        console.log('URL que falló:', this.src);
+    };
+});
+
+// Información adicional
+console.log('STATIC_URL:', '{% static "" %}');
+console.log('Número de logos encontrados:', logos.length);
+</script>
+{% endblock %}

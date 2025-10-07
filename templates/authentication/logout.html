@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}Cerrando Sesión - Sistema ERP{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body text-center">
+                    <div class="animate__animated animate__fadeIn">
+                        <i class="bi bi-box-arrow-right display-1 text-primary mb-4"></i>
+                        <h3 class="card-title">Cerrando Sesión</h3>
+                        <p class="card-text">Estás siendo desconectado del sistema...</p>
+                        <div class="spinner-border text-primary mt-3" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

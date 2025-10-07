@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}Test - Sistema Funcionando{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title mb-0">
+                        <i class="bi bi-check-circle-fill"></i> Sistema Funcionando Correctamente
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-success">
+                        <h4 class="alert-heading">✅ ¡Todo está funcionando!</h4>
+                        <p class="mb-0">{{ message }}</p>
+                    </div>
+
+                    <h5>Elementos Verificados:</h5>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <i class="bi bi-check-circle text-success"></i> Django funcionando correctamente
+                        </li>
+                        <li class="list-group-item">
+                            <i class="bi bi-check-circle text-success"></i> Base de datos conectada
+                        </li>
+                        <li class="list-group-item">
+                            <i class="bi bi-check-circle text-success"></i> Plantillas cargando correctamente
+                        </li>
+                        <li class="list-group-item">
+                            <i class="bi bi-check-circle text-success"></i> Bootstrap y estilos funcionando
+                        </li>
+                        <li class="list-group-item">
+                            <i class="bi bi-check-circle text-success"></i> JavaScript ejecutándose correctamente
+                        </li>
+                        <li class="list-group-item">
+                            <i class="bi bi-check-circle text-success"></i> Chart.js disponible para gráficos
+                        </li>
+                    </ul>
+
+                    <div class="mt-4">
+                        <a href="{% url 'dashboard:index' %}" class="btn btn-primary">
+                            <i class="bi bi-arrow-left"></i> Volver al Dashboard
+                        </a>
+                        <a href="/test/test/" class="btn btn-secondary">
+                            <i class="bi bi-arrow-right"></i> Probar de nuevo
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

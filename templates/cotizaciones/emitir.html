@@ -1,0 +1,221 @@
+{% extends 'base.html' %}
+
+{% block title %}Emitir Nueva Cotización - Sistema ERP{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header con botón volver -->
+    <div class="d-flex align-items-center gap-3 mb-4">
+        <a href="{% url 'cotizaciones:list' %}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-chevron-left"></i> Volver
+        </a>
+        <div>
+            <h1 class="h2 mb-0 text-dark">Emitir Nueva Cotización</h1>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Contenido Principal -->
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0 d-flex align-items-center">
+                        <i class="bi bi-chevron-down me-2"></i>
+                        Datos para la emisión
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <!-- Datos del receptor -->
+                        <div class="mb-5">
+                            <div class="d-flex align-items-center gap-2 mb-4">
+                                <i class="bi bi-building text-muted"></i>
+                                <h4 class="mb-0 text-dark">Datos del receptor</h4>
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-md-3">
+                                    <label class="form-label fw-medium text-dark">Rut Cliente</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" name="rut_cliente" placeholder="12.345.678-9" required>
+                                        <button class="btn btn-primary" type="button">
+                                            <i class="bi bi-check"></i>
+                                        </button>
+                                        <button class="btn btn-outline-secondary" type="button">
+                                            <i class="bi bi-search"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label fw-medium text-dark">Razón social</label>
+                                    <input type="text" class="form-control" name="razon_social" placeholder="Nombre de la empresa" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label fw-medium text-dark">Folio</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" name="folio" value="{{ numero_sugerido }}" placeholder="Automático">
+                                        <button class="btn btn-outline-secondary" type="button" onclick="generarNuevoFolio()" title="Generar nuevo folio">
+                                            <i class="bi bi-arrow-clockwise"></i>
+                                        </button>
+                                    </div>
+                                    <small class="text-muted">Deja vacío para generar automáticamente</small>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label fw-medium text-dark">Moneda</label>
+                                    <select class="form-select" name="moneda">
+                                        <option value="CLP" selected>CLP - Peso Chileno</option>
+                                        <option value="USD">USD - Dólar</option>
+                                        <option value="EUR">EUR - Euro</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contactos Asignados al receptor -->
+                        <div class="mb-5">
+                            <div class="d-flex align-items-center justify-content-between mb-4">
+                                <div class="d-flex align-items-center gap-2">
+                                    <i class="bi bi-people text-muted"></i>
+                                    <h4 class="mb-0 text-dark">Contactos Asignados al receptor</h4>
+                                </div>
+                                <button type="button" class="btn btn-primary">Contactos</button>
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label fw-medium text-dark">Nombre Contacto</label>
+                                    <input type="text" class="form-control" name="nombre_contacto" placeholder="Nombre del contacto">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-medium text-dark">Fono Contacto</label>
+                                    <input type="text" class="form-control" name="fono_contacto" placeholder="+56 9 1234 5678">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-medium text-dark">Email Contacto</label>
+                                    <input type="email" class="form-control" name="email_contacto" placeholder="contacto@empresa.com">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Vendedor Asignado -->
+                        <div class="mb-5">
+                            <div class="d-flex align-items-center justify-content-between mb-4">
+                                <div class="d-flex align-items-center gap-2">
+                                    <i class="bi bi-person-check text-muted"></i>
+                                    <h4 class="mb-0 text-dark">Vendedor Asignado</h4>
+                                </div>
+                                <button type="button" class="btn btn-primary">Trabajadores</button>
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label fw-medium text-dark">Nombre</label>
+                                    <select class="form-select" name="vendedor">
+                                        <option value="">Seleccionar vendedor</option>
+                                        <option value="juan_perez">Juan Pérez</option>
+                                        <option value="maria_gonzalez">María González</option>
+                                        <option value="carlos_lopez">Carlos López</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-medium text-dark">Fono</label>
+                                    <input type="text" class="form-control bg-light" name="fono_vendedor" readonly>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-medium text-dark">Email</label>
+                                    <input type="email" class="form-control bg-light" name="email_vendedor" readonly>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Glosa Adicional -->
+                        <div class="mb-5">
+                            <label class="form-label fw-medium text-dark">Glosa Adicional</label>
+                            <textarea class="form-control" name="glosa_adicional" rows="4" 
+                                      placeholder="Ingrese observaciones adicionales..."></textarea>
+                            <div class="form-text">Caracteres Permitidos 600</div>
+                        </div>
+
+                        <!-- Botones de acción -->
+                        <div class="d-flex gap-3 pt-3 border-top">
+                            <button type="submit" class="btn btn-primary">
+                                Grabar y Salir
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary">
+                                <i class="bi bi-file-text me-2"></i>
+                                Vista Previa
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Auto-completar datos del cliente cuando se ingresa RUT
+document.querySelector('input[name="rut_cliente"]').addEventListener('blur', function() {
+    const rut = this.value;
+    if (rut) {
+        // Simular búsqueda de cliente
+        document.querySelector('input[name="razon_social"]').value = 'EMPRESA EJEMPLO S.A.';
+        document.querySelector('input[name="nombre_contacto"]').value = 'Juan Pérez';
+        document.querySelector('input[name="fono_contacto"]').value = '+56 9 1234 5678';
+        document.querySelector('input[name="email_contacto"]').value = 'contacto@empresa.com';
+    }
+});
+
+// Auto-completar datos del vendedor
+document.querySelector('select[name="vendedor"]').addEventListener('change', function() {
+    const vendedor = this.value;
+    const fonoField = document.querySelector('input[name="fono_vendedor"]');
+    const emailField = document.querySelector('input[name="email_vendedor"]');
+    
+    switch(vendedor) {
+        case 'juan_perez':
+            fonoField.value = '+56 9 1111 1111';
+            emailField.value = 'juan.perez@empresa.com';
+            break;
+        case 'maria_gonzalez':
+            fonoField.value = '+56 9 2222 2222';
+            emailField.value = 'maria.gonzalez@empresa.com';
+            break;
+        case 'carlos_lopez':
+            fonoField.value = '+56 9 3333 3333';
+            emailField.value = 'carlos.lopez@empresa.com';
+            break;
+        default:
+            fonoField.value = '';
+            emailField.value = '';
+    }
+});
+
+// Contador de caracteres para glosa adicional
+const glosaTextarea = document.querySelector('textarea[name="glosa_adicional"]');
+const charCounter = document.querySelector('.form-text');
+
+glosaTextarea.addEventListener('input', function() {
+    const remaining = 600 - this.value.length;
+    charCounter.textContent = `Caracteres restantes: ${remaining}`;
+    
+    if (remaining < 0) {
+        charCounter.classList.add('text-danger');
+        this.classList.add('is-invalid');
+    } else {
+        charCounter.classList.remove('text-danger');
+        this.classList.remove('is-invalid');
+    }
+});
+
+// Función para generar nuevo folio
+function generarNuevoFolio() {
+    const year = new Date().getFullYear();
+    const random = Math.floor(Math.random() * 9000) + 1000; // 4 dígitos aleatorios
+    const nuevoFolio = `${year}${random}`;
+    
+    document.querySelector('input[name="folio"]').value = nuevoFolio;
+}
+</script>
+{% endblock %}

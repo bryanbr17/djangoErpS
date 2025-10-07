@@ -1,0 +1,196 @@
+{% extends 'base.html' %}
+{% load math_filters %}
+
+{% block title %}COT-{{ cotizacion.numero }} - Cotizaciones{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard:index' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'cotizaciones:list' %}">Cotizaciones</a></li>
+                    <li class="breadcrumb-item active">COT-{{ cotizacion.numero }}</li>
+                </ol>
+            </nav>
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-0">Cotización COT-{{ cotizacion.numero }}</h1>
+                    <p class="text-muted">{{ cotizacion.cliente.nombre }}</p>
+                </div>
+                <div>
+                    <span class="badge bg-{% if cotizacion.estado == 'aprobada' %}success{% elif cotizacion.estado == 'enviada' %}info{% elif cotizacion.estado == 'borrador' %}secondary{% elif cotizacion.estado == 'rechazada' %}danger{% else %}warning{% endif %} fs-6">
+                        {{ cotizacion.get_estado_display }}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Detalles de la Cotización</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6>Información del Cliente</h6>
+                            <table class="table table-sm">
+                                <tr>
+                                    <td><strong>Nombre:</strong></td>
+                                    <td>{{ cotizacion.cliente.nombre }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>RUT:</strong></td>
+                                    <td>{{ cotizacion.cliente.rut }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Email:</strong></td>
+                                    <td>{{ cotizacion.cliente.email|default:"No especificado" }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Teléfono:</strong></td>
+                                    <td>{{ cotizacion.cliente.telefono|default:"No especificado" }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Información de la Cotización</h6>
+                            <table class="table table-sm">
+                                <tr>
+                                    <td><strong>Fecha Creación:</strong></td>
+                                    <td>{{ cotizacion.fecha_creacion|date:"d/m/Y H:i" }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Vencimiento:</strong></td>
+                                    <td>{{ cotizacion.fecha_vencimiento|date:"d/m/Y" }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Técnico Asignado:</strong></td>
+                                    <td>{{ cotizacion.tecnico_asignado.nombre_completo|default:"No asignado" }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Creado por:</strong></td>
+                                    <td>{{ cotizacion.creado_por.get_full_name|default:cotizacion.creado_por.username }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <h6>Items de la Cotización</h6>
+                    {% if cotizacion.items.all %}
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Producto</th>
+                                        <th>Descripción</th>
+                                        <th>Cantidad</th>
+                                        <th>Precio Unit.</th>
+                                        <th>Descuento</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in cotizacion.items.all %}
+                                    <tr>
+                                        <td>{{ item.producto.nombre }}</td>
+                                        <td>{{ item.descripcion|default:item.producto.descripcion|truncatechars:50 }}</td>
+                                        <td>{{ item.cantidad }}</td>
+                                        <td>${{ item.precio_unitario|floatformat:0 }}</td>
+                                        <td>{{ item.descuento_item }}%</td>
+                                        <td>${{ item.total|floatformat:0 }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="5" class="text-end"><strong>Subtotal:</strong></td>
+                                        <td><strong>${{ cotizacion.subtotal|floatformat:0 }}</strong></td>
+                                    </tr>
+                                    {% if cotizacion.descuento > 0 %}
+                                    <tr>
+                                        <td colspan="5" class="text-end">Descuento ({{ cotizacion.descuento }}%):</td>
+                                        <td>-${{ cotizacion.subtotal|percentage:cotizacion.descuento|floatformat:0 }}</td>
+                                    </tr>
+                                    {% endif %}
+                                    <tr>
+                                        <td colspan="5" class="text-end">IVA (19%):</td>
+                                        <td>${{ cotizacion.impuestos|floatformat:0 }}</td>
+                                    </tr>
+                                    <tr class="table-success">
+                                        <td colspan="5" class="text-end"><strong>TOTAL:</strong></td>
+                                        <td><strong>${{ cotizacion.total|floatformat:0 }}</strong></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No hay items en esta cotización</p>
+                    {% endif %}
+
+                    {% if cotizacion.observaciones %}
+                    <div class="mt-4">
+                        <h6>Observaciones</h6>
+                        <p>{{ cotizacion.observaciones }}</p>
+                    </div>
+                    {% endif %}
+
+                    {% if cotizacion.condiciones_comerciales %}
+                    <div class="mt-3">
+                        <h6>Condiciones Comerciales</h6>
+                        <p>{{ cotizacion.condiciones_comerciales }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Acciones</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary">
+                            <i class="bi bi-pencil"></i> Editar
+                        </button>
+                        <button class="btn btn-success">
+                            <i class="bi bi-send"></i> Enviar al Cliente
+                        </button>
+                        <button class="btn btn-info">
+                            <i class="bi bi-file-pdf"></i> Generar PDF
+                        </button>
+                        <button class="btn btn-warning">
+                            <i class="bi bi-copy"></i> Duplicar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {% if cotizacion.seguimientos.all %}
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="mb-0">Seguimiento</h5>
+                </div>
+                <div class="card-body">
+                    <div class="timeline">
+                        {% for seguimiento in cotizacion.seguimientos.all|slice:":5" %}
+                        <div class="timeline-item mb-3">
+                            <small class="text-muted">{{ seguimiento.fecha|date:"d/m/Y H:i" }}</small>
+                            <h6 class="mb-1">{{ seguimiento.get_tipo_display }}</h6>
+                            <p class="mb-0 small">{{ seguimiento.descripcion }}</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

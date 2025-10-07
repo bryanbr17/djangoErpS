@@ -1,0 +1,727 @@
+{% extends 'base.html' %}
+
+{% block title %}Cotizaciones - Sistema ERP{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Filtros de búsqueda -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <!-- Primera fila de filtros -->
+                <div class="col-md-2">
+                    <label for="folio" class="form-label">Folio</label>
+                    <input type="text" class="form-control" id="folio" name="folio" 
+                           value="{{ folio }}" placeholder="Folio">
+                </div>
+                <div class="col-md-2">
+                    <label for="rut" class="form-label">RUT</label>
+                    <input type="text" class="form-control" id="rut" name="rut" 
+                           value="{{ rut }}" placeholder="RUT">
+                </div>
+                <div class="col-md-3">
+                    <label for="razon_social" class="form-label">Razón Social</label>
+                    <input type="text" class="form-control" id="razon_social" name="razon_social" 
+                           value="{{ razon_social }}" placeholder="Cliente">
+                </div>
+                <div class="col-md-2">
+                    <label for="contacto" class="form-label">Contacto</label>
+                    <input type="text" class="form-control" id="contacto" name="contacto" 
+                           value="{{ contacto }}" placeholder="Contacto">
+                </div>
+                <div class="col-md-3">
+                    <label for="detalle" class="form-label">Detalle</label>
+                    <input type="text" class="form-control" id="detalle" name="detalle" 
+                           value="{{ detalle }}" placeholder="Detalle">
+                </div>
+                
+                <!-- Segunda fila de filtros -->
+                <div class="col-md-2">
+                    <label for="año" class="form-label">Año</label>
+                    <select class="form-select" id="año" name="año">
+                        <option value="todos" {% if año == 'todos' %}selected{% endif %}>Todos</option>
+                        {% for año_disponible in años_disponibles %}
+                            <option value="{{ año_disponible.year }}" {% if año == año_disponible.year|stringformat:"s" %}selected{% endif %}>
+                                {{ año_disponible.year }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label for="fecha_emision" class="form-label">Fecha Emisión</label>
+                    <input type="date" class="form-control" id="fecha_emision" name="fecha_emision" 
+                           value="{{ fecha_emision }}">
+                </div>
+                <div class="col-md-2">
+                    <label for="estado" class="form-label">Estado</label>
+                    <select class="form-select" id="estado" name="estado">
+                        <option value="todas" {% if estado == 'todas' %}selected{% endif %}>Todas</option>
+                        <option value="borrador" {% if estado == 'borrador' %}selected{% endif %}>Borrador</option>
+                        <option value="enviada" {% if estado == 'enviada' %}selected{% endif %}>Enviada</option>
+                        <option value="aprobada" {% if estado == 'aprobada' %}selected{% endif %}>Aprobada</option>
+                        <option value="rechazada" {% if estado == 'rechazada' %}selected{% endif %}>Rechazada</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label for="tipo" class="form-label">Tipo</label>
+                    <select class="form-select" id="tipo" name="tipo">
+                        <option value="todas" {% if tipo == 'todas' %}selected{% endif %}>Todas</option>
+                        <option value="afecta" {% if tipo == 'afecta' %}selected{% endif %}>Afecta</option>
+                        <option value="exenta" {% if tipo == 'exenta' %}selected{% endif %}>Exenta</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label for="vendedor" class="form-label">Vendedor</label>
+                    <select class="form-select" id="vendedor" name="vendedor">
+                        <option value="todos" {% if vendedor == 'todos' %}selected{% endif %}>Todos</option>
+                        {% for v in vendedores %}
+                            <option value="{{ v }}" {% if vendedor == v %}selected{% endif %}>{{ v }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary me-2">
+                        <i class="bi bi-search"></i> Buscar
+                    </button>
+                    <a href="{% url 'cotizaciones:list' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-clockwise"></i> Limpiar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Acciones y botones -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex align-items-center gap-3">
+            <select class="form-select" style="width: 250px;">
+                <option>Los Primeros 100 Registros</option>
+                <option>Los Primeros 50 Registros</option>
+                <option>Todos los Registros</option>
+            </select>
+        </div>
+        
+        <div class="d-flex align-items-center gap-2">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#cotizacionModal">
+                <i class="bi bi-plus"></i> Nueva Cotización
+            </button>
+            
+            <div class="dropdown">
+                <button class="btn btn-success dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                    Acciones
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#">Exportar Seleccionadas</a></li>
+                    <li><a class="dropdown-item" href="#">Eliminar Seleccionadas</a></li>
+                </ul>
+            </div>
+            
+            <button class="btn btn-outline-success">
+                <i class="bi bi-download"></i> Exportar XLS
+            </button>
+        </div>
+    </div>
+
+    <!-- Tabla de cotizaciones -->
+    <div class="card">
+        <div class="card-body p-0">
+            {% if cotizaciones %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="p-3">Folio</th>
+                                <th class="p-3">RUT</th>
+                                <th class="p-3">Razón Social</th>
+                                <th class="p-3">Emisión</th>
+                                <th class="p-3">Vencimiento</th>
+                                <th class="p-3">Estado</th>
+                                <th class="p-3">Moneda</th>
+                                <th class="p-3 text-end">Neto</th>
+                                <th class="p-3 text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for cotizacion in cotizaciones %}
+                            <tr class="{% cycle 'bg-white' 'bg-light' %}">
+                                <td class="p-3">
+                                    <div class="fw-bold text-primary">{{ cotizacion.numero }}</div>
+                                    <div class="small text-primary">Afecta</div>
+                                </td>
+                                <td class="p-3">
+                                    <code class="small">{{ cotizacion.cliente.rut }}</code>
+                                </td>
+                                <td class="p-3">
+                                    <div class="fw-bold text-primary" style="max-width: 300px;">
+                                        {{ cotizacion.cliente.nombre|truncatechars:40 }}
+                                    </div>
+                                    <div class="small text-muted">
+                                        <div><strong>Contacto:</strong> {{ cotizacion.cliente.contacto_principal }}</div>
+                                        <div><strong>Vendedor:</strong> {{ cotizacion.creado_por.get_full_name|default:cotizacion.creado_por.username }}</div>
+                                    </div>
+                                    <div class="small text-muted mt-1">
+                                        <strong>Detalle:</strong> {{ cotizacion.observaciones|default:"Sin observaciones"|truncatechars:50 }}
+                                    </div>
+                                </td>
+                                <td class="p-3 small">{{ cotizacion.fecha_creacion|date:"Y-m-d" }}</td>
+                                <td class="p-3 small">{{ cotizacion.fecha_vencimiento|date:"Y-m-d" }}</td>
+                                <td class="p-3">
+                                    <span class="badge {% if cotizacion.estado == 'borrador' %}bg-secondary{% elif cotizacion.estado == 'enviada' %}bg-info{% elif cotizacion.estado == 'aprobada' %}bg-success{% elif cotizacion.estado == 'rechazada' %}bg-danger{% else %}bg-warning{% endif %}">
+                                        {{ cotizacion.get_estado_display }}
+                                    </span>
+                                </td>
+                                <td class="p-3 small">CLP</td>
+                                <td class="p-3 text-end">
+                                    <div class="fw-bold">${{ cotizacion.subtotal|floatformat:0 }}</div>
+                                    <div class="small text-success">+IVA ${{ cotizacion.impuestos|floatformat:0 }}</div>
+                                </td>
+                                <td class="p-3">
+                                    <div class="d-flex justify-content-center gap-1">
+                                        <a href="{% url 'cotizaciones:aprobar' cotizacion.pk %}" 
+                                           class="btn btn-sm btn-outline-success" title="Aprobar">
+                                            <i class="bi bi-check-circle"></i>
+                                        </a>
+                                        <a href="{% url 'cotizaciones:rechazar' cotizacion.pk %}" 
+                                           class="btn btn-sm btn-outline-danger" title="Rechazar">
+                                            <i class="bi bi-x-circle"></i>
+                                        </a>
+                                        <button class="btn btn-sm btn-primary" title="Enviar">
+                                            <i class="bi bi-send"></i>
+                                        </button>
+                                        <a href="{% url 'cotizaciones:detail' cotizacion.pk %}" 
+                                           class="btn btn-sm btn-outline-primary" title="Ver">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-outline-primary dropdown-toggle" 
+                                                    type="button" data-bs-toggle="dropdown">
+                                                <i class="bi bi-three-dots"></i>
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li><a class="dropdown-item" href="#"><i class="bi bi-file-pdf me-2"></i>Visualizar PDF</a></li>
+                                                <li><a class="dropdown-item" href="#"><i class="bi bi-file-pdf me-2"></i>PDF Sin Valores</a></li>
+                                                <li><a class="dropdown-item" href="{% url 'cotizaciones:edit' cotizacion.pk %}"><i class="bi bi-pencil me-2"></i>Editar Cotización</a></li>
+                                                <li><a class="dropdown-item" href="#"><i class="bi bi-bell me-2"></i>Notificar</a></li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li><a class="dropdown-item text-success" href="{% url 'cotizaciones:aprobar' cotizacion.pk %}"><i class="bi bi-check-circle me-2"></i>Aprobar</a></li>
+                                                <li><a class="dropdown-item text-danger" href="{% url 'cotizaciones:rechazar' cotizacion.pk %}"><i class="bi bi-x-circle me-2"></i>Rechazar</a></li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li><a class="dropdown-item text-danger" href="{% url 'cotizaciones:delete' cotizacion.pk %}" onclick="return confirm('¿Estás seguro de que deseas eliminar esta cotización? Esta acción no se puede deshacer.')"><i class="bi bi-trash me-2"></i>Eliminar</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="bi bi-file-text display-1 text-muted"></i>
+                    <h4 class="mt-3">No hay cotizaciones registradas</h4>
+                    <p class="text-muted">Crea tu primera cotización para comenzar</p>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#cotizacionModal">
+                        <i class="bi bi-plus"></i> Nueva Cotización
+                    </button>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Nueva Cotización -->
+<div class="modal fade" id="cotizacionModal" tabindex="-1" aria-labelledby="cotizacionModalLabel" aria-hidden="true" style="pointer-events: auto !important; z-index: 9999 !important;" data-bs-backdrop="false" data-bs-keyboard="false">
+    <div class="modal-dialog modal-xl" style="pointer-events: auto !important; z-index: 10000 !important;">
+        <div class="modal-content" style="pointer-events: auto !important; z-index: 10001 !important;">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="cotizacionModalLabel">
+                    <i class="bi bi-file-text-plus"></i> Nueva Cotización
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" enctype="multipart/form-data" id="cotizacionForm" style="pointer-events: auto !important;">
+                {% csrf_token %}
+                <div class="modal-body" style="pointer-events: auto !important; z-index: 10002 !important;">
+                    <div class="alert alert-info">
+                        <strong>¡Modal funcionando!</strong> Los campos del formulario están disponibles para edición.
+                    </div>
+
+                    <!-- Información del Cliente -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h6 class="mb-0">
+                                <i class="bi bi-person"></i> Información del Cliente
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_cliente_tipo" class="form-label">Tipo de Cliente</label>
+                                    <select name="cliente_tipo" class="form-select" id="id_cliente_tipo" style="pointer-events: auto !important; z-index: 10004 !important; position: relative !important;">
+                                        <option value="">Seleccionar tipo</option>
+                                        <option value="persona">Persona Natural</option>
+                                        <option value="empresa">Empresa</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_cliente_rut" class="form-label">RUT *</label>
+                                    <input type="text" name="cliente_rut" class="form-control" placeholder="12.345.678-9" id="id_cliente_rut" required style="pointer-events: auto !important; z-index: 10004 !important; position: relative !important;">
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_cliente_nombre" class="form-label">Nombre / Razón Social *</label>
+                                    <input type="text" name="cliente_nombre" class="form-control" maxlength="200" required id="id_cliente_nombre" style="pointer-events: auto !important; z-index: 10004 !important; position: relative !important;">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_cliente_email" class="form-label">Email</label>
+                                    <input type="email" name="cliente_email" class="form-control" maxlength="320" id="id_cliente_email" style="pointer-events: auto !important; z-index: 10004 !important; position: relative !important;">
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_cliente_telefono" class="form-label">Teléfono</label>
+                                    <input type="text" name="cliente_telefono" class="form-control" placeholder="+56 9 1234 5678" id="id_cliente_telefono" style="pointer-events: auto !important; z-index: 10004 !important; position: relative !important;">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_cliente_contacto" class="form-label">Contacto Principal</label>
+                                    <input type="text" name="cliente_contacto" class="form-control" maxlength="100" id="id_cliente_contacto" style="pointer-events: auto !important; z-index: 10004 !important; position: relative !important;">
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="id_cliente_direccion" class="form-label">Dirección</label>
+                                <textarea name="cliente_direccion" class="form-control" rows="2" id="id_cliente_direccion" style="pointer-events: auto !important; z-index: 10004 !important; position: relative !important;"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Información de la Cotización -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h6 class="mb-0">
+                                <i class="bi bi-file-text"></i> Información de la Cotización
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_numero" class="form-label">Número de Cotización *</label>
+                                    <input type="text" name="numero" class="form-control" maxlength="20" required id="id_numero" placeholder="COT-001" style="pointer-events: auto !important; z-index: 10004 !important; position: relative !important;">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_fecha_vencimiento" class="form-label">Fecha de Vencimiento *</label>
+                                    <input type="date" name="fecha_vencimiento" class="form-control" required id="id_fecha_vencimiento" style="pointer-events: auto !important; z-index: 10004 !important; position: relative !important;">
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_tecnico_asignado" class="form-label">Técnico Asignado</label>
+                                    <select name="tecnico_asignado" class="form-select" id="id_tecnico_asignado" style="pointer-events: auto !important; z-index: 10004 !important; position: relative !important;">
+                                        <option value="">Seleccionar técnico</option>
+                                        <option value="">Sin asignar</option>
+                                        <!-- Los técnicos se cargarán dinámicamente -->
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_descuento_global" class="form-label">Descuento Global (%)</label>
+                                    <input type="number" name="descuento_global" class="form-control" step="0.01" min="0" max="100" id="id_descuento_global" style="pointer-events: auto !important; z-index: 10004 !important; position: relative !important;">
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_observaciones" class="form-label">Observaciones</label>
+                                    <textarea name="observaciones" class="form-control" rows="3" id="id_observaciones" style="pointer-events: auto !important; z-index: 10004 !important; position: relative !important;"></textarea>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_condiciones_comerciales" class="form-label">Condiciones Comerciales</label>
+                                    <textarea name="condiciones_comerciales" class="form-control" rows="3" id="id_condiciones_comerciales" style="pointer-events: auto !important; z-index: 10004 !important; position: relative !important;"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Items de la Cotización -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h6 class="mb-0">
+                                <i class="bi bi-box"></i> Productos y Servicios
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div id="items-container">
+                                <!-- Item template será insertado aquí por JavaScript -->
+                            </div>
+
+                            <button type="button" class="btn btn-outline-primary" id="add-item-btn" style="pointer-events: auto !important;">
+                                <i class="bi bi-plus-circle"></i> Agregar Producto
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Resumen de Totales -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h6 class="mb-0">
+                                <i class="bi bi-calculator"></i> Resumen de Totales
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Subtotal:</label>
+                                        <div class="form-control-plaintext fw-bold" id="subtotal-display">$0</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Descuento:</label>
+                                        <div class="form-control-plaintext fw-bold text-danger" id="descuento-display">-$0</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Subtotal con Descuento:</label>
+                                        <div class="form-control-plaintext fw-bold" id="subtotal-descuento-display">$0</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">IVA (19%):</label>
+                                        <div class="form-control-plaintext fw-bold" id="iva-display">$0</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label text-primary fs-5">TOTAL:</label>
+                                        <div class="form-control-plaintext fw-bold fs-4 text-primary" id="total-display">$0</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x"></i> Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check"></i> Crear Cotización
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* CSS ULTRA-AGRESIVO PARA FORZAR INTERACTIVIDAD EN COTIZACIONES */
+    #cotizacionModal,
+    #cotizacionModal *,
+    #cotizacionModal input,
+    #cotizacionModal select,
+    #cotizacionModal textarea,
+    #cotizacionModal button,
+    #cotizacionModal .form-control,
+    #cotizacionModal .form-select,
+    #cotizacionModal .btn {
+        pointer-events: auto !important;
+        cursor: auto !important;
+    }
+
+    /* Z-INDEX EXTREMADAMENTE ALTOS */
+    #cotizacionModal {
+        z-index: 9999 !important;
+    }
+
+    #cotizacionModal .modal-dialog {
+        z-index: 10000 !important;
+    }
+
+    #cotizacionModal .modal-content {
+        z-index: 10001 !important;
+    }
+
+    #cotizacionModal .modal-body {
+        z-index: 10002 !important;
+    }
+
+    /* TODOS los inputs, selects, textareas y buttons FUERZAN z-index alto */
+    #cotizacionModal input,
+    #cotizacionModal select,
+    #cotizacionModal textarea,
+    #cotizacionModal button,
+    #cotizacionModal .form-control,
+    #cotizacionModal .form-select,
+    #cotizacionModal .btn {
+        z-index: 10004 !important;
+        position: relative !important;
+        pointer-events: auto !important;
+        cursor: auto !important;
+    }
+
+    /* Cursors específicos */
+    #cotizacionModal input[type="text"],
+    #cotizacionModal input[type="email"],
+    #cotizacionModal input[type="date"],
+    #cotizacionModal input[type="number"],
+    #cotizacionModal select,
+    #cotizacionModal textarea {
+        cursor: text !important;
+    }
+
+    #cotizacionModal button,
+    #cotizacionModal .btn {
+        cursor: pointer !important;
+    }
+
+    /* Estilos para items de cotización */
+    .item-row {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+        position: relative;
+    }
+
+    .item-row .remove-item {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: #dc3545;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    .item-row .remove-item:hover {
+        background: #c82333;
+    }
+
+    /* Estilos para el cálculo automático */
+    .precio-total-item {
+        font-weight: bold;
+        color: #8B5CF6;
+        font-size: 1.1em;
+    }
+
+    /* Animación para nuevos items */
+    .item-row.new-item {
+        animation: slideInUp 0.3s ease-out;
+    }
+
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 Modal de cotizaciones cargado - Forzando interactividad...');
+
+    // Variables globales
+    const modalElement = document.getElementById('cotizacionModal');
+
+    // Función para forzar interactividad cada 500ms
+    function forceModalInteractivity() {
+        if (modalElement && modalElement.classList.contains('show')) {
+            console.log('🔧 Forzando interactividad del modal de cotizaciones...');
+
+            // Forzar pointer-events en todos los elementos del modal
+            const allElements = modalElement.querySelectorAll('*');
+            allElements.forEach(element => {
+                element.style.pointerEvents = 'auto';
+                element.style.cursor = 'auto';
+            });
+
+            // Específicamente los inputs y controles
+            const inputs = modalElement.querySelectorAll('input, select, textarea, button');
+            inputs.forEach(input => {
+                input.style.pointerEvents = 'auto';
+                input.style.cursor = input.type === 'submit' || input.type === 'button' ? 'pointer' : 'text';
+                input.disabled = false;
+                input.style.zIndex = '10005';
+                input.style.position = 'relative';
+            });
+
+            console.log('✅ Modal de cotizaciones interactivo forzado');
+        }
+    }
+
+    // Ejecutar inmediatamente
+    forceModalInteractivity();
+
+    // Y cada 500ms mientras el modal esté abierto
+    setInterval(forceModalInteractivity, 500);
+
+    // También cuando se abra el modal
+    if (modalElement) {
+        modalElement.addEventListener('shown.bs.modal', function() {
+            console.log('🚪 Modal de cotizaciones abierto - Aplicando interactividad');
+            setTimeout(forceModalInteractivity, 100);
+        });
+    }
+
+    // Variables globales para el manejo de productos
+    let itemCounter = 0;
+    let productos = []; // Aquí se cargarían los productos disponibles
+
+    // Función para agregar un nuevo item de producto
+    function addProductItem() {
+        itemCounter++;
+        const container = document.getElementById('items-container');
+
+        const itemHtml = `
+            <div class="item-row new-item" id="item-${itemCounter}">
+                <button type="button" class="remove-item" onclick="removeProductItem(${itemCounter})" title="Eliminar producto">
+                    <i class="bi bi-trash"></i>
+                </button>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Producto/Servicio</label>
+                        <select name="items[${itemCounter}][producto]" class="form-select producto-select" required>
+                            <option value="">Seleccionar producto</option>
+                            <!-- Los productos se cargarían dinámicamente aquí -->
+                            <option value="servicio">Servicio Técnico</option>
+                            <option value="mantenimiento">Mantenimiento</option>
+                            <option value="instalacion">Instalación</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Cantidad</label>
+                        <input type="number" name="items[${itemCounter}][cantidad]" class="form-control cantidad-input"
+                               min="1" value="1" required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Precio Unitario</label>
+                        <input type="number" name="items[${itemCounter}][precio_unitario]" class="form-control precio-input"
+                               step="0.01" min="0" value="0" required>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Descuento (%)</label>
+                        <input type="number" name="items[${itemCounter}][descuento_item]" class="form-control descuento-item-input"
+                               step="0.01" min="0" max="100" value="0">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Total Item</label>
+                        <div class="form-control-plaintext precio-total-item" id="total-item-${itemCounter}">$0</div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Descripción</label>
+                    <textarea name="items[${itemCounter}][descripcion]" class="form-control descripcion-input"
+                              rows="2" placeholder="Descripción del producto/servicio"></textarea>
+                </div>
+            </div>
+        `;
+
+        container.insertAdjacentHTML('beforeend', itemHtml);
+
+        // Agregar event listeners para calcular automáticamente
+        const item = document.getElementById(`item-${itemCounter}`);
+        const cantidadInput = item.querySelector('.cantidad-input');
+        const precioInput = item.querySelector('.precio-input');
+        const descuentoInput = item.querySelector('.descuento-item-input');
+
+        [cantidadInput, precioInput, descuentoInput].forEach(input => {
+            input.addEventListener('input', () => calculateItemTotal(itemCounter));
+        });
+
+        // Calcular inicialmente
+        calculateItemTotal(itemCounter);
+        updateGrandTotal();
+    }
+
+    // Función para eliminar un item de producto
+    function removeProductItem(itemId) {
+        const item = document.getElementById(`item-${itemId}`);
+        if (item) {
+            item.remove();
+            updateGrandTotal();
+        }
+    }
+
+    // Función para calcular el total de un item
+    function calculateItemTotal(itemId) {
+        const cantidad = parseFloat(document.querySelector(`#item-${itemId} .cantidad-input`).value) || 0;
+        const precio = parseFloat(document.querySelector(`#item-${itemId} .precio-input`).value) || 0;
+        const descuento = parseFloat(document.querySelector(`#item-${itemId} .descuento-item-input`).value) || 0;
+
+        const subtotal = cantidad * precio;
+        const descuentoMonto = subtotal * (descuento / 100);
+        const total = subtotal - descuentoMonto;
+
+        const totalElement = document.getElementById(`total-item-${itemId}`);
+        if (totalElement) {
+            totalElement.textContent = `$${total.toLocaleString('es-CL', {minimumFractionDigits: 2})}`;
+        }
+
+        updateGrandTotal();
+    }
+
+    // Función para calcular el total general
+    function updateGrandTotal() {
+        let subtotal = 0;
+        const totalElements = document.querySelectorAll('.precio-total-item');
+
+        totalElements.forEach(element => {
+            const value = parseFloat(element.textContent.replace('$', '').replace(/\./g, '').replace(',', '.')) || 0;
+            subtotal += value;
+        });
+
+        const descuentoGlobal = parseFloat(document.getElementById('id_descuento_global').value) || 0;
+        const descuentoMonto = subtotal * (descuentoGlobal / 100);
+        const subtotalConDescuento = subtotal - descuentoMonto;
+        const iva = subtotalConDescuento * 0.19;
+        const total = subtotalConDescuento + iva;
+
+        // Actualizar displays
+        document.getElementById('subtotal-display').textContent = `$${subtotal.toLocaleString('es-CL', {minimumFractionDigits: 2})}`;
+        document.getElementById('descuento-display').textContent = `-$${descuentoMonto.toLocaleString('es-CL', {minimumFractionDigits: 2})}`;
+        document.getElementById('subtotal-descuento-display').textContent = `$${subtotalConDescuento.toLocaleString('es-CL', {minimumFractionDigits: 2})}`;
+        document.getElementById('iva-display').textContent = `$${iva.toLocaleString('es-CL', {minimumFractionDigits: 2})}`;
+        document.getElementById('total-display').textContent = `$${total.toLocaleString('es-CL', {minimumFractionDigits: 2})}`;
+    }
+
+    // Event listener para el botón de agregar producto
+    document.getElementById('add-item-btn').addEventListener('click', addProductItem);
+
+    // Event listener para el descuento global
+    document.getElementById('id_descuento_global').addEventListener('input', updateGrandTotal);
+
+    // Agregar un producto inicial cuando se abra el modal
+    if (modalElement) {
+        modalElement.addEventListener('shown.bs.modal', function() {
+            if (document.querySelectorAll('.item-row').length === 0) {
+                addProductItem();
+            }
+        });
+    }
+
+    console.log('✅ Sistema de productos dinámicos activo');
+});
+</script>
+{% endblock %}
+
+{% endblock %}

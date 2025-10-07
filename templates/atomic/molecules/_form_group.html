@@ -1,0 +1,45 @@
+<!-- Componente Molecular: Form Group (para inclusion tags) -->
+{% if form_group %}
+<div class="mb-3">
+    <label for="{{ form_group.id }}" class="form-label">
+        {{ form_group.label }}
+        {% if form_group.required %}<span class="text-danger">*</span>{% endif %}
+    </label>
+
+    {% if form_group.type == "textarea" %}
+        <textarea
+            class="form-control"
+            id="{{ form_group.id }}"
+            name="{{ form_group.name }}"
+            placeholder="{{ form_group.placeholder }}"
+            {% if form_group.required %}required{% endif %}
+            {% for key, value in form_group.kwargs.items() %}{{ key }}{% if value is not none %}="{{ value }}"{% endif %} {% endfor %}
+        ></textarea>
+    {% elif form_group.type == "select" %}
+        <select
+            class="form-select"
+            id="{{ form_group.id }}"
+            name="{{ form_group.name }}"
+            {% if form_group.required %}required{% endif %}
+            {% for key, value in form_group.kwargs.items() %}{{ key }}{% if value is not none %}="{{ value }}"{% endif %} {% endfor %}
+        >
+            {{ form_group.content|default:"" }}
+        </select>
+    {% else %}
+        <input
+            type="{{ form_group.type }}"
+            class="form-control"
+            id="{{ form_group.id }}"
+            name="{{ form_group.name }}"
+            value="{{ form_group.value }}"
+            placeholder="{{ form_group.placeholder }}"
+            {% if form_group.required %}required{% endif %}
+            {% for key, value in form_group.kwargs.items() %}{{ key }}{% if value is not none %}="{{ value }}"{% endif %} {% endfor %}
+        >
+    {% endif %}
+
+    {% if form_group.help_text %}
+        <div class="form-text">{{ form_group.help_text }}</div>
+    {% endif %}
+</div>
+{% endif %}

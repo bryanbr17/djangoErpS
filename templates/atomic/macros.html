@@ -1,0 +1,17 @@
+{% comment %}
+    Sistema de componentes Atomic Design para Setel ERP
+
+    Este archivo importa las template tags de Django para hacer disponibles
+    los componentes atómicos, moleculares y orgánicos en cualquier template.
+
+    Uso:
+        {% load atomic_components %}
+
+        {% icon 'speedometer2' %}
+        {% badge 'Activo' variant='success' %}
+        {% button 'primary' %}¡Hola!{% button %}
+        {% card 'Título' %}Contenido{% card %}
+        {% alert 'Mensaje' variant='info' %}
+        {% header user=request.user %}
+        {% footer %}
+{% endcomment %}

@@ -1,0 +1,211 @@
+{% extends 'base.html' %}
+
+{% block title %}Reportes - Sistema ERP{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="h3 mb-0">Centro de Reportes</h1>
+            <p class="text-muted">Genera reportes y analiza el rendimiento del negocio</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Reportes de Ventas -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-graph-up"></i> Reportes de Ventas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Analiza las ventas, cotizaciones y rendimiento comercial.</p>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-file-earmark-text"></i> Ventas por Período
+                        </button>
+                        <button class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-pie-chart"></i> Cotizaciones por Estado
+                        </button>
+                        <button class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-person-check"></i> Rendimiento por Técnico
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reportes de Inventario -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-boxes"></i> Reportes de Inventario
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Controla el stock, movimientos y valorización del inventario.</p>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-success btn-sm">
+                            <i class="bi bi-list-check"></i> Stock Actual
+                        </button>
+                        <button class="btn btn-outline-success btn-sm">
+                            <i class="bi bi-exclamation-triangle"></i> Productos Bajo Stock
+                        </button>
+                        <button class="btn btn-outline-success btn-sm">
+                            <i class="bi bi-arrow-left-right"></i> Movimientos de Inventario
+                        </button>
+                        <button class="btn btn-outline-success btn-sm">
+                            <i class="bi bi-currency-dollar"></i> Valorización de Stock
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reportes de Recursos Humanos -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-people"></i> Reportes de RRHH
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Gestiona información de técnicos, vacaciones y rendimiento.</p>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-info btn-sm">
+                            <i class="bi bi-person-lines-fill"></i> Listado de Técnicos
+                        </button>
+                        <button class="btn btn-outline-info btn-sm">
+                            <i class="bi bi-calendar-check"></i> Reporte de Vacaciones
+                        </button>
+                        <button class="btn btn-outline-info btn-sm">
+                            <i class="bi bi-award"></i> Especialidades por Técnico
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reportes Rápidos -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-lightning"></i> Reportes Rápidos
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <div class="card border-primary">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-calendar-week display-4 text-primary"></i>
+                                    <h6 class="mt-2">Resumen Semanal</h6>
+                                    <button class="btn btn-sm btn-primary">Generar</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card border-success">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-calendar-month display-4 text-success"></i>
+                                    <h6 class="mt-2">Resumen Mensual</h6>
+                                    <button class="btn btn-sm btn-success">Generar</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card border-warning">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-exclamation-triangle display-4 text-warning"></i>
+                                    <h6 class="mt-2">Alertas de Stock</h6>
+                                    <button class="btn btn-sm btn-warning">Generar</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card border-info">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-graph-up-arrow display-4 text-info"></i>
+                                    <h6 class="mt-2">Análisis de Tendencias</h6>
+                                    <button class="btn btn-sm btn-info">Generar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Configuración de Reportes -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-gear"></i> Configuración de Reportes
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Reportes Automáticos</h6>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="reporteSemanal">
+                                <label class="form-check-label" for="reporteSemanal">
+                                    Enviar reporte semanal por email
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="reporteMensual">
+                                <label class="form-check-label" for="reporteMensual">
+                                    Enviar reporte mensual por email
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="alertasStock">
+                                <label class="form-check-label" for="alertasStock">
+                                    Alertas automáticas de stock bajo
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Formato de Exportación</h6>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="formato" id="formatoPDF" checked>
+                                <label class="form-check-label" for="formatoPDF">
+                                    PDF
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="formato" id="formatoExcel">
+                                <label class="form-check-label" for="formatoExcel">
+                                    Excel
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="formato" id="formatoCSV">
+                                <label class="form-check-label" for="formatoCSV">
+                                    CSV
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <button class="btn btn-primary">
+                            <i class="bi bi-check"></i> Guardar Configuración
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

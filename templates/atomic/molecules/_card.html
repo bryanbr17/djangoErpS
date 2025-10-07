@@ -1,0 +1,21 @@
+<!-- Componente Molecular: Card (para inclusion tags) -->
+{% if card %}
+<div class="card{% if card.class %} {{ card.class }}{% endif %}" {% for key, value in card.kwargs.items() %}{{ key }}{% if value is not none %}="{{ value }}"{% endif %} {% endfor %}>
+    {% if card.title or card.subtitle %}
+        <div class="card-header{% if card.header_class %} {{ card.header_class }}{% endif %}">
+            {% if card.title %}<h5 class="card-title mb-0">{{ card.title }}</h5>{% endif %}
+            {% if card.subtitle %}<p class="card-subtitle text-muted mb-0">{{ card.subtitle }}</p>{% endif %}
+        </div>
+    {% endif %}
+
+    <div class="card-body{% if card.body_class %} {{ card.body_class }}{% endif %}">
+        {{ card.content|default:"" }}
+    </div>
+
+    {% if card.footer %}
+        <div class="card-footer{% if card.footer_class %} {{ card.footer_class }}{% endif %}">
+            {{ card.footer }}
+        </div>
+    {% endif %}
+</div>
+{% endif %}

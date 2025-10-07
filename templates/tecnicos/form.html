@@ -1,0 +1,345 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} - Técnicos{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard:index' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'tecnicos:list' %}">Técnicos</a></li>
+                    <li class="breadcrumb-item active">{{ action }}</li>
+                </ol>
+            </nav>
+            <h1 class="h3 mb-0">{{ title }}</h1>
+        </div>
+    </div>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div class="row">
+            <div class="col-md-8">
+                <!-- Información Personal -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-person"></i> Información Personal
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.first_name.id_for_label }}" class="form-label">{{ form.first_name.label }}</label>
+                                {{ form.first_name }}
+                                {% if form.first_name.errors %}
+                                    <div class="text-danger small">{{ form.first_name.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.last_name.id_for_label }}" class="form-label">{{ form.last_name.label }}</label>
+                                {{ form.last_name }}
+                                {% if form.last_name.errors %}
+                                    <div class="text-danger small">{{ form.last_name.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.rut.id_for_label }}" class="form-label">{{ form.rut.label }}</label>
+                                {{ form.rut }}
+                                {% if form.rut.errors %}
+                                    <div class="text-danger small">{{ form.rut.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.fecha_nacimiento.id_for_label }}" class="form-label">{{ form.fecha_nacimiento.label }}</label>
+                                {{ form.fecha_nacimiento }}
+                                {% if form.fecha_nacimiento.errors %}
+                                    <div class="text-danger small">{{ form.fecha_nacimiento.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.ubicacion.id_for_label }}" class="form-label">{{ form.ubicacion.label }}</label>
+                                {{ form.ubicacion }}
+                                {% if form.ubicacion.errors %}
+                                    <div class="text-danger small">{{ form.ubicacion.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.email.id_for_label }}" class="form-label">{{ form.email.label }}</label>
+                                {{ form.email }}
+                                {% if form.email.errors %}
+                                    <div class="text-danger small">{{ form.email.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.direccion.id_for_label }}" class="form-label">{{ form.direccion.label }}</label>
+                            {{ form.direccion }}
+                            {% if form.direccion.errors %}
+                                <div class="text-danger small">{{ form.direccion.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Información Laboral -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-briefcase"></i> Información Laboral
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.departamento.id_for_label }}" class="form-label">{{ form.departamento.label }}</label>
+                                {{ form.departamento }}
+                                {% if form.departamento.errors %}
+                                    <div class="text-danger small">{{ form.departamento.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.puesto.id_for_label }}" class="form-label">{{ form.puesto.label }}</label>
+                                {{ form.puesto }}
+                                {% if form.puesto.errors %}
+                                    <div class="text-danger small">{{ form.puesto.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.fecha_ingreso.id_for_label }}" class="form-label">{{ form.fecha_ingreso.label }}</label>
+                                {{ form.fecha_ingreso }}
+                                {% if form.fecha_ingreso.errors %}
+                                    <div class="text-danger small">{{ form.fecha_ingreso.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.codigo_empleado.id_for_label }}" class="form-label">{{ form.codigo_empleado.label }}</label>
+                                {{ form.codigo_empleado }}
+                                {% if form.codigo_empleado.errors %}
+                                    <div class="text-danger small">{{ form.codigo_empleado.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.estado.id_for_label }}" class="form-label">{{ form.estado.label }}</label>
+                                {{ form.estado }}
+                                {% if form.estado.errors %}
+                                    <div class="text-danger small">{{ form.estado.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.salario_base.id_for_label }}" class="form-label">{{ form.salario_base.label }}</label>
+                                {{ form.salario_base }}
+                                {% if form.salario_base.errors %}
+                                    <div class="text-danger small">{{ form.salario_base.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.prevision.id_for_label }}" class="form-label">{{ form.prevision.label }}</label>
+                                {{ form.prevision }}
+                                {% if form.prevision.errors %}
+                                    <div class="text-danger small">{{ form.prevision.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.afp.id_for_label }}" class="form-label">{{ form.afp.label }}</label>
+                                {{ form.afp }}
+                                {% if form.afp.errors %}
+                                    <div class="text-danger small">{{ form.afp.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">{{ form.especialidades.label }}</label>
+                            <div class="row">
+                                {% for choice in form.especialidades %}
+                                    <div class="col-md-4 mb-2">
+                                        <div class="form-check">
+                                            {{ choice.tag }}
+                                            <label class="form-check-label" for="{{ choice.id_for_label }}">
+                                                {{ choice.choice_label }}
+                                            </label>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            {% if form.especialidades.errors %}
+                                <div class="text-danger small">{{ form.especialidades.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Información de Contacto -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-phone"></i> Información de Contacto
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.telefono.id_for_label }}" class="form-label">{{ form.telefono.label }}</label>
+                                {{ form.telefono }}
+                                {% if form.telefono.errors %}
+                                    <div class="text-danger small">{{ form.telefono.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.telefono_emergencia.id_for_label }}" class="form-label">{{ form.telefono_emergencia.label }}</label>
+                                {{ form.telefono_emergencia }}
+                                {% if form.telefono_emergencia.errors %}
+                                    <div class="text-danger small">{{ form.telefono_emergencia.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.nombre_emergencia.id_for_label }}" class="form-label">{{ form.nombre_emergencia.label }}</label>
+                                {{ form.nombre_emergencia }}
+                                {% if form.nombre_emergencia.errors %}
+                                    <div class="text-danger small">{{ form.nombre_emergencia.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.linkedin.id_for_label }}" class="form-label">{{ form.linkedin.label }}</label>
+                                {{ form.linkedin }}
+                                {% if form.linkedin.errors %}
+                                    <div class="text-danger small">{{ form.linkedin.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Información Adicional -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-info-circle"></i> Información Adicional
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.foto.id_for_label }}" class="form-label">{{ form.foto.label }}</label>
+                                {{ form.foto }}
+                                {% if form.foto.errors %}
+                                    <div class="text-danger small">{{ form.foto.errors.0 }}</div>
+                                {% endif %}
+                                <div class="form-text">Formatos permitidos: JPG, PNG, GIF. Tamaño máximo: 5MB</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.postre_favorito.id_for_label }}" class="form-label">{{ form.postre_favorito.label }}</label>
+                                {{ form.postre_favorito }}
+                                {% if form.postre_favorito.errors %}
+                                    <div class="text-danger small">{{ form.postre_favorito.errors.0 }}</div>
+                                {% endif %}
+                                <div class="form-text">Campo opcional y divertido 😊</div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.observaciones.id_for_label }}" class="form-label">{{ form.observaciones.label }}</label>
+                            {{ form.observaciones }}
+                            {% if form.observaciones.errors %}
+                                <div class="text-danger small">{{ form.observaciones.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <!-- Vista previa de foto -->
+                {% if tecnico and tecnico.foto %}
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h6 class="mb-0">Foto Actual</h6>
+                    </div>
+                    <div class="card-body text-center">
+                        <img src="{{ tecnico.foto.url }}" class="img-fluid rounded" style="max-height: 200px;">
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Información de ayuda -->
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="mb-0">
+                            <i class="bi bi-info-circle"></i> Información
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <ul class="small mb-0">
+                            <li>El código de empleado debe ser único</li>
+                            <li>Se creará un usuario automáticamente</li>
+                            <li>Las especialidades son opcionales</li>
+                            <li>La foto de perfil es opcional</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones de acción -->
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex justify-content-between">
+                    <a href="{% url 'tecnicos:list' %}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Cancelar
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check"></i> {{ action }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Vista previa de imagen
+document.getElementById('{{ form.foto.id_for_label }}').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            // Crear o actualizar vista previa
+            let preview = document.getElementById('foto-preview');
+            if (!preview) {
+                preview = document.createElement('img');
+                preview.id = 'foto-preview';
+                preview.className = 'img-fluid rounded mt-2';
+                preview.style.maxHeight = '200px';
+                e.target.parentNode.appendChild(preview);
+            }
+            preview.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+});
+</script>
+{% endblock %}

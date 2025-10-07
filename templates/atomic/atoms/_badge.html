@@ -1,0 +1,37 @@
+<!-- Componente Atómico: Badge -->
+{% macro badge(text="", variant="primary", pill=False, class="", **kwargs) %}
+{% set badge_classes = "badge" %}
+
+{# Variants #}
+{% if variant == "primary" %}
+    {% set badge_classes = badge_classes + " bg-primary" %}
+{% elif variant == "secondary" %}
+    {% set badge_classes = badge_classes + " bg-secondary" %}
+{% elif variant == "success" %}
+    {% set badge_classes = badge_classes + " bg-success" %}
+{% elif variant == "danger" %}
+    {% set badge_classes = badge_classes + " bg-danger" %}
+{% elif variant == "warning" %}
+    {% set badge_classes = badge_classes + " bg-warning text-dark" %}
+{% elif variant == "info" %}
+    {% set badge_classes = badge_classes + " bg-info text-dark" %}
+{% elif variant == "light" %}
+    {% set badge_classes = badge_classes + " bg-light text-dark" %}
+{% elif variant == "dark" %}
+    {% set badge_classes = badge_classes + " bg-dark" %}
+{% endif %}
+
+{# Pill style #}
+{% if pill %}
+    {% set badge_classes = badge_classes + " rounded-pill" %}
+{% endif %}
+
+{# Custom classes #}
+{% if class %}
+    {% set badge_classes = badge_classes + " " + class %}
+{% endif %}
+
+<span class="{{ badge_classes }}" {% for key, value in kwargs.items() %}{{ key }}{% if value is not none %}="{{ value }}"{% endif %} {% endfor %}>
+    {{ text }}
+</span>
+{% endmacro %}

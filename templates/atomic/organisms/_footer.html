@@ -1,0 +1,19 @@
+<!-- Componente Orgánico: Footer (para inclusion tags) -->
+{% if footer %}
+<footer class="bg-light py-4 mt-auto">
+    <div class="container-fluid">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <p class="mb-0 text-muted">
+                    © {{ footer.year|default:"2024" }} {{ footer.company_name }} - Sistema de Gestión Empresarial
+                </p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <small class="text-muted">
+                    v1.0 | Desarrollado con Django & Bootstrap
+                </small>
+            </div>
+        </div>
+    </div>
+</footer>
+{% endif %}

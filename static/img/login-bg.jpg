@@ -1,0 +1,49 @@
+<svg width="1920" height="1080" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8B5CF6;stop-opacity:0.3" />
+      <stop offset="50%" style="stop-color:#7C3AED;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#6D28D9;stop-opacity:0.3" />
+    </linearGradient>
+    <pattern id="circuitPattern" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
+      <circle cx="20" cy="20" r="2" fill="#8B5CF6" opacity="0.3"/>
+      <circle cx="60" cy="40" r="1.5" fill="#7C3AED" opacity="0.4"/>
+      <circle cx="80" cy="80" r="2.5" fill="#6D28D9" opacity="0.2"/>
+      <line x1="20" y1="20" x2="60" y2="40" stroke="#8B5CF6" stroke-width="1" opacity="0.2"/>
+      <line x1="60" y1="40" x2="80" y2="80" stroke="#7C3AED" stroke-width="1" opacity="0.3"/>
+    </pattern>
+  </defs>
+
+  <!-- Fondo base -->
+  <rect width="1920" height="1080" fill="url(#bgGradient)"/>
+
+  <!-- Patrón de circuito tecnológico -->
+  <rect width="1920" height="1080" fill="url(#circuitPattern)" opacity="0.1"/>
+
+  <!-- Elementos geométricos abstractos -->
+  <g opacity="0.1">
+    <!-- Hexágonos -->
+    <polygon points="400,200 450,180 500,200 500,250 450,270 400,250" fill="#8B5CF6" opacity="0.2"/>
+    <polygon points="1200,300 1250,280 1300,300 1300,350 1250,370 1200,350" fill="#7C3AED" opacity="0.3"/>
+
+    <!-- Círculos conectados -->
+    <circle cx="300" cy="400" r="80" fill="none" stroke="#8B5CF6" stroke-width="2" opacity="0.3"/>
+    <circle cx="500" cy="500" r="60" fill="none" stroke="#7C3AED" stroke-width="2" opacity="0.4"/>
+    <line x1="380" y1="400" x2="440" y2="500" stroke="#8B5CF6" stroke-width="2" opacity="0.3"/>
+
+    <!-- Triángulos -->
+    <polygon points="800,600 850,550 900,600 850,650 800,600" fill="#6D28D9" opacity="0.2"/>
+    <polygon points="1400,200 1450,150 1500,200 1450,250 1400,200" fill="#8B5CF6" opacity="0.3"/>
+
+    <!-- Líneas de conexión -->
+    <line x1="100" y1="100" x2="1800" y2="100" stroke="#8B5CF6" stroke-width="1" opacity="0.2"/>
+    <line x1="100" y1="300" x2="1800" y2="300" stroke="#7C3AED" stroke-width="1" opacity="0.3"/>
+    <line x1="100" y1="500" x2="1800" y2="500" stroke="#6D28D9" stroke-width="1" opacity="0.2"/>
+    <line x1="100" y1="700" x2="1800" y2="700" stroke="#8B5CF6" stroke-width="1" opacity="0.3"/>
+    <line x1="100" y1="900" x2="1800" y2="900" stroke="#7C3AED" stroke-width="1" opacity="0.2"/>
+  </g>
+
+  <!-- Texto sutil de fondo -->
+  <text x="960" y="540" font-family="Arial, sans-serif" font-size="48" fill="#8B5CF6" opacity="0.05" text-anchor="middle">SETEL</text>
+  <text x="960" y="600" font-family="Arial, sans-serif" font-size="24" fill="#7C3AED" opacity="0.04" text-anchor="middle">Sistema de Gestión</text>
+</svg>

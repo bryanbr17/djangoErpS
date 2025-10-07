@@ -1,0 +1,137 @@
+<!-- Ejemplo de uso de Atomic Design Components -->
+{% extends 'base.html' %}
+
+{% block title %}Atomic Design Demo - Setel ERP{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Header usando componente orgánico -->
+    {{ header(user=user) }}
+
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4">
+                {{ icon('palette') }} Atomic Design Demo
+            </h1>
+
+            <!-- Alerta usando componente molecular -->
+            {{ alert('Este es un ejemplo de cómo usar componentes Atomic Design en Setel ERP', variant='info', dismissible=True) }}
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <!-- Columna de componentes atómicos -->
+        <div class="col-md-6">
+            {{ card('Componentes Atómicos', 'Elementos básicos reutilizables') }}
+                <div class="row">
+                    <div class="col-6">
+                        {{ button(variant='primary') }}
+                            {{ icon('check-circle') }} Botón Primario
+                        {{ button() }}
+                    </div>
+                    <div class="col-6">
+                        {{ button(variant='outline-secondary') }}
+                            {{ icon('star') }} Botón Outline
+                        {{ button() }}
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="row">
+                    <div class="col-4">
+                        {{ badge('Activo', variant='success', pill=True) }}
+                    </div>
+                    <div class="col-4">
+                        {{ badge('Pendiente', variant='warning', pill=True) }}
+                    </div>
+                    <div class="col-4">
+                        {{ badge('Error', variant='danger', pill=True) }}
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="mb-3">
+                    {{ form_group(
+                        type='text',
+                        id='demo-input',
+                        label='Campo de texto',
+                        placeholder='Ingresa algo...',
+                        help_text='Este es un campo de ejemplo'
+                    ) }}
+                </div>
+            {{ card() }}
+        </div>
+
+        <!-- Columna de componentes moleculares -->
+        <div class="col-md-6">
+            {{ card('Componentes Moleculares', 'Combinaciones de átomos') }}
+                {{ alert('¡Éxito! Operación completada correctamente.', variant='success') }}
+
+                <div class="row">
+                    <div class="col-12">
+                        {{ form_group(
+                            type='select',
+                            id='demo-select',
+                            label='Selecciona una opción',
+                            required=True
+                        ) }}
+                            <option value="">Elegir opción...</option>
+                            <option value="1">Opción 1</option>
+                            <option value="2">Opción 2</option>
+                            <option value="3">Opción 3</option>
+                        {{ form_group() }}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        {{ form_group(
+                            type='textarea',
+                            id='demo-textarea',
+                            label='Comentarios',
+                            placeholder='Escribe tus comentarios aquí...',
+                            rows='3'
+                        ) }}
+                    </div>
+                </div>
+            {{ card() }}
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            {{ card('Beneficios de Atomic Design', 'Por qué usar este sistema') }}
+                <div class="row">
+                    <div class="col-md-4 text-center">
+                        <div class="mb-3">
+                            {{ icon('speedometer2', size='3em') }}
+                        </div>
+                        <h5>Consistencia</h5>
+                        <p>Todos los componentes siguen las mismas reglas de diseño</p>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <div class="mb-3">
+                            {{ icon('arrow-repeat', size='3em') }}
+                        </div>
+                        <h5>Reutilización</h5>
+                        <p>Los componentes se pueden usar en múltiples lugares</p>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <div class="mb-3">
+                            {{ icon('wrench-adjustable', size='3em') }}
+                        </div>
+                        <h5>Mantenibilidad</h5>
+                        <p>Cambios en un componente se aplican automáticamente</p>
+                    </div>
+                </div>
+            {{ card() }}
+        </div>
+    </div>
+</div>
+
+<!-- Footer usando componente orgánico -->
+{{ footer() }}
+
+{% endblock %}

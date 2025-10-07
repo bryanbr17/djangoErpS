@@ -1,0 +1,4 @@
+<!-- Componente Atómico: Icon -->
+{% macro icon(name="", size="1em", class="", **kwargs) %}
+<i class="bi bi-{{ name }}{% if class %} {{ class }}{% endif %}" style="font-size: {{ size }};" {% for key, value in kwargs.items() %}{{ key }}{% if value is not none %}="{{ value }}"{% endif %} {% endfor %}></i>
+{% endmacro %}

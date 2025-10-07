@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} - Setel ERP{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-exclamation-triangle"></i> Confirmar Eliminación
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        <strong>¡Atención!</strong> Esta acción no se puede deshacer.
+                    </div>
+
+                    <p>¿Estás seguro de que deseas eliminar el siguiente producto?</p>
+
+                    <div class="row">
+                        <div class="col-sm-3"><strong>Código:</strong></div>
+                        <div class="col-sm-9">{{ producto.codigo }}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3"><strong>Nombre:</strong></div>
+                        <div class="col-sm-9">{{ producto.nombre }}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3"><strong>Categoría:</strong></div>
+                        <div class="col-sm-9">
+                            {% if producto.categoria %}
+                                {{ producto.categoria.nombre }}
+                            {% else %}
+                                <span class="text-muted">Sin categoría</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3"><strong>Stock:</strong></div>
+                        <div class="col-sm-9">{{ producto.stock_actual }}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3"><strong>Precio:</strong></div>
+                        <div class="col-sm-9">${{ producto.precio_venta|floatformat:0 }}</div>
+                    </div>
+
+                    <div class="mt-4">
+                        <strong>Esta acción eliminará:</strong>
+                        <ul class="mt-2">
+                            <li>El producto y toda su información</li>
+                            <li>Todos los movimientos de inventario asociados</li>
+                            <li>Referencias en cotizaciones (se establecerán como nulas)</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card-footer text-center">
+                    <form method="post" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-trash"></i> Sí, eliminar producto
+                        </button>
+                    </form>
+                    <a href="{% url 'productos:detail' producto.pk %}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Cancelar
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} - Técnicos{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard:index' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'tecnicos:list' %}">Técnicos</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'tecnicos:detail' tecnico.pk %}">{{ tecnico.nombre_completo }}</a></li>
+                    <li class="breadcrumb-item active">Subir Documento</li>
+                </ol>
+            </nav>
+            <h1 class="h3 mb-0">{{ title }}</h1>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-upload"></i> Subir Documento
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.tipo.id_for_label }}" class="form-label">{{ form.tipo.label }}</label>
+                                {{ form.tipo }}
+                                {% if form.tipo.errors %}
+                                    <div class="text-danger small">{{ form.tipo.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.nombre.id_for_label }}" class="form-label">{{ form.nombre.label }}</label>
+                                {{ form.nombre }}
+                                {% if form.nombre.errors %}
+                                    <div class="text-danger small">{{ form.nombre.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.archivo.id_for_label }}" class="form-label">{{ form.archivo.label }}</label>
+                            {{ form.archivo }}
+                            {% if form.archivo.errors %}
+                                <div class="text-danger small">{{ form.archivo.errors.0 }}</div>
+                            {% endif %}
+                            <div class="form-text">Formatos permitidos: PDF, DOC, DOCX, JPG, PNG. Tamaño máximo: 10MB</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.descripcion.id_for_label }}" class="form-label">{{ form.descripcion.label }}</label>
+                            {{ form.descripcion }}
+                            {% if form.descripcion.errors %}
+                                <div class="text-danger small">{{ form.descripcion.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="{% url 'tecnicos:detail' tecnico.pk %}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Cancelar
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-upload"></i> Subir Documento
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-md-4">
+            <!-- Información del técnico -->
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="bi bi-person"></i> Información del Técnico
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        {% if tecnico.foto %}
+                            <img src="{{ tecnico.foto.url }}" class="rounded-circle" width="80" height="80">
+                        {% else %}
+                            <div class="bg-secondary rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                                <i class="bi bi-person text-white" style="font-size: 2rem;"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <h6 class="text-center">{{ tecnico.nombre_completo }}</h6>
+                    <p class="text-center text-muted">{{ tecnico.codigo_empleado }}</p>
+                    
+                    <hr>
+                    
+                    <p class="small mb-1"><strong>Documentos actuales:</strong> {{ tecnico.documentos.count }}</p>
+                </div>
+            </div>
+
+            <!-- Tipos de documentos -->
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="bi bi-info-circle"></i> Tipos de Documentos
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <ul class="small mb-0">
+                        <li><strong>CV:</strong> Curriculum Vitae</li>
+                        <li><strong>Certificado:</strong> Certificaciones profesionales</li>
+                        <li><strong>Contrato:</strong> Documentos contractuales</li>
+                        <li><strong>Identificación:</strong> Cédula, pasaporte, etc.</li>
+                        <li><strong>Otro:</strong> Otros documentos relevantes</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Información sobre archivos -->
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="bi bi-file-earmark"></i> Formatos Permitidos
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <ul class="small mb-0">
+                        <li>PDF (.pdf)</li>
+                        <li>Word (.doc, .docx)</li>
+                        <li>Imágenes (.jpg, .png, .gif)</li>
+                        <li>Tamaño máximo: 10MB</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Mostrar información del archivo seleccionado
+document.getElementById('{{ form.archivo.id_for_label }}').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const fileSize = (file.size / 1024 / 1024).toFixed(2); // MB
+        const fileName = file.name;
+        
+        // Crear o actualizar información del archivo
+        let fileInfo = document.getElementById('file-info');
+        if (!fileInfo) {
+            fileInfo = document.createElement('div');
+            fileInfo.id = 'file-info';
+            fileInfo.className = 'alert alert-info mt-2';
+            e.target.parentNode.appendChild(fileInfo);
+        }
+        
+        fileInfo.innerHTML = `
+            <strong>Archivo seleccionado:</strong><br>
+            <i class="bi bi-file-earmark"></i> ${fileName}<br>
+            <small>Tamaño: ${fileSize} MB</small>
+        `;
+        
+        // Auto-completar nombre si está vacío
+        const nombreField = document.getElementById('{{ form.nombre.id_for_label }}');
+        if (!nombreField.value) {
+            nombreField.value = fileName.split('.')[0];
+        }
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,11 @@
+<!-- Componente Molecular: Alert (para inclusion tags) -->
+{% if alert %}
+{% load static %}
+
+<div class="alert alert-{{ alert.variant }}{% if alert.dismissible %} alert-dismissible fade show{% endif %}{% if alert.class %} {{ alert.class }}{% endif %}" role="alert" {% for key, value in alert.kwargs.items() %}{{ key }}{% if value is not none %}="{{ value }}"{% endif %} {% endfor %}>
+    {% if alert.dismissible %}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    {% endif %}
+    {{ alert.message }}
+</div>
+{% endif %}

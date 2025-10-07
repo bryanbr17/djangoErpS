@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+
+{% block title %}Configuración General - Sistema ERP{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard:index' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'configuracion:index' %}">Configuración</a></li>
+                    <li class="breadcrumb-item active">General</li>
+                </ol>
+            </nav>
+            <h1 class="h3 mb-0">
+                <i class="bi bi-gear"></i> Configuración General
+            </h1>
+            <p class="text-muted">Configura la información básica de tu empresa y sistema</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <form method="post">
+                {% csrf_token %}
+                
+                <!-- Información de la Empresa -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-building"></i> Información de la Empresa
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="nombre_empresa" class="form-label">Nombre de la Empresa</label>
+                                <input type="text" class="form-control" id="nombre_empresa" name="nombre_empresa" 
+                                       value="{{ config.nombre_empresa }}" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="rut_empresa" class="form-label">RUT de la Empresa</label>
+                                <input type="text" class="form-control" id="rut_empresa" name="rut_empresa" 
+                                       value="{{ config.rut_empresa }}">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="direccion_empresa" class="form-label">Dirección</label>
+                            <textarea class="form-control" id="direccion_empresa" name="direccion_empresa" 
+                                      rows="2">{{ config.direccion_empresa }}</textarea>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="telefono_empresa" class="form-label">Teléfono</label>
+                                <input type="text" class="form-control" id="telefono_empresa" name="telefono_empresa" 
+                                       value="{{ config.telefono_empresa }}">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="email_empresa" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email_empresa" name="email_empresa" 
+                                       value="{{ config.email_empresa }}">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="sitio_web" class="form-label">Sitio Web</label>
+                                <input type="url" class="form-control" id="sitio_web" name="sitio_web" 
+                                       value="{{ config.sitio_web }}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Configuración Comercial -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-currency-dollar"></i> Configuración Comercial
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="moneda_principal" class="form-label">Moneda Principal</label>
+                                <select class="form-select" id="moneda_principal" name="moneda_principal">
+                                    <option value="CLP" {% if config.moneda_principal == 'CLP' %}selected{% endif %}>Peso Chileno (CLP)</option>
+                                    <option value="USD" {% if config.moneda_principal == 'USD' %}selected{% endif %}>Dólar Americano (USD)</option>
+                                    <option value="EUR" {% if config.moneda_principal == 'EUR' %}selected{% endif %}>Euro (EUR)</option>
+                                    <option value="ARS" {% if config.moneda_principal == 'ARS' %}selected{% endif %}>Peso Argentino (ARS)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="iva_porcentaje" class="form-label">IVA (%)</label>
+                                <input type="number" class="form-control" id="iva_porcentaje" name="iva_porcentaje" 
+                                       value="{{ config.iva_porcentaje }}" step="0.01" min="0" max="100">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Configuración Regional -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-globe"></i> Configuración Regional
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="zona_horaria" class="form-label">Zona Horaria</label>
+                                <select class="form-select" id="zona_horaria" name="zona_horaria">
+                                    <option value="America/Santiago" {% if config.zona_horaria == 'America/Santiago' %}selected{% endif %}>Santiago (Chile)</option>
+                                    <option value="America/Argentina/Buenos_Aires" {% if config.zona_horaria == 'America/Argentina/Buenos_Aires' %}selected{% endif %}>Buenos Aires (Argentina)</option>
+                                    <option value="America/Lima" {% if config.zona_horaria == 'America/Lima' %}selected{% endif %}>Lima (Perú)</option>
+                                    <option value="America/Bogota" {% if config.zona_horaria == 'America/Bogota' %}selected{% endif %}>Bogotá (Colombia)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="idioma" class="form-label">Idioma</label>
+                                <select class="form-select" id="idioma" name="idioma">
+                                    <option value="es" {% if config.idioma == 'es' %}selected{% endif %}>Español</option>
+                                    <option value="en" {% if config.idioma == 'en' %}selected{% endif %}>English</option>
+                                    <option value="pt" {% if config.idioma == 'pt' %}selected{% endif %}>Português</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <a href="{% url 'configuracion:index' %}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Volver
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check"></i> Guardar Configuración
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="bi bi-info-circle"></i> Información
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <p class="small text-muted">
+                        Esta configuración afecta a todo el sistema. Los cambios se aplicarán inmediatamente.
+                    </p>
+                    
+                    <hr>
+                    
+                    <h6>Última actualización:</h6>
+                    <p class="small">
+                        {{ config.updated_at|date:"d/m/Y H:i" }}<br>
+                        {% if config.updated_by %}
+                            por {{ config.updated_by.get_full_name|default:config.updated_by.username }}
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="bi bi-lightbulb"></i> Consejos
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <ul class="small mb-0">
+                        <li>El nombre de la empresa aparecerá en todos los documentos</li>
+                        <li>La configuración de IVA se aplicará a todas las cotizaciones</li>
+                        <li>La zona horaria afecta las fechas mostradas en el sistema</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

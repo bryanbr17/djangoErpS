@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block title %}Solicitud de Vacaciones - {{ vacacion.tecnico.nombre_completo }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard:index' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'tecnicos:list' %}">Técnicos</a></li>
+                    <li class="breadcrumb-item active">Solicitud de Vacaciones</li>
+                </ol>
+            </nav>
+            <h1 class="h3 mb-0">Solicitud de Vacaciones</h1>
+            <p class="text-muted">{{ vacacion.tecnico.nombre_completo }}</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Detalles de la Solicitud</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-sm">
+                                <tr>
+                                    <td><strong>Técnico:</strong></td>
+                                    <td>{{ vacacion.tecnico.nombre_completo }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Código:</strong></td>
+                                    <td>{{ vacacion.tecnico.codigo_empleado }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Fecha Inicio:</strong></td>
+                                    <td>{{ vacacion.fecha_inicio }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Fecha Fin:</strong></td>
+                                    <td>{{ vacacion.fecha_fin }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-sm">
+                                <tr>
+                                    <td><strong>Días Solicitados:</strong></td>
+                                    <td>{{ vacacion.dias_solicitados }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Estado:</strong></td>
+                                    <td>
+                                        <span class="badge bg-{% if vacacion.estado == 'aprobada' %}success{% elif vacacion.estado == 'pendiente' %}warning{% else %}secondary{% endif %}">
+                                            {{ vacacion.get_estado_display }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Fecha Solicitud:</strong></td>
+                                    <td>{{ vacacion.created_at }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    {% if vacacion.motivo %}
+                    <div class="mt-3">
+                        <h6>Motivo</h6>
+                        <p>{{ vacacion.motivo }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            {% if vacacion.estado == 'pendiente' %}
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Acciones</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-success">
+                            <i class="bi bi-check-circle"></i> Aprobar
+                        </button>
+                        <button class="btn btn-danger">
+                            <i class="bi bi-x-circle"></i> Rechazar
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

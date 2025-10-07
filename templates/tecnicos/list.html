@@ -1,0 +1,604 @@
+{% extends 'base.html' %}
+
+{% block title %}Técnicos - Sistema ERP{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="h3 mb-0">Gestión de Técnicos</h1>
+            <p class="text-muted">Administra la información de los técnicos</p>
+        </div>
+    </div>
+
+    <!-- Filtros y búsqueda -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-4">
+                            <label for="search" class="form-label">Buscar</label>
+                            <input type="text" class="form-control" id="search" name="search" 
+                                   value="{{ search }}" placeholder="Nombre, apellido o código...">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="estado" class="form-label">Estado</label>
+                            <select class="form-select" id="estado" name="estado">
+                                <option value="">Todos los estados</option>
+                                {% for value, label in estados %}
+                                    <option value="{{ value }}" {% if estado_selected == value %}selected{% endif %}>
+                                        {{ label }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="especialidad" class="form-label">Especialidad</label>
+                            <select class="form-select" id="especialidad" name="especialidad">
+                                <option value="">Todas las especialidades</option>
+                                {% for esp in especialidades %}
+                                    <option value="{{ esp.id }}" {% if especialidad_selected == esp.id|stringformat:"s" %}selected{% endif %}>
+                                        {{ esp.nombre }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button type="submit" class="btn btn-outline-primary me-2">
+                                <i class="bi bi-search"></i> Buscar
+                            </button>
+                            <a href="{% url 'tecnicos:list' %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-x"></i>
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Lista de Técnicos ({{ tecnicos.count }})</h5>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tecnicoModal">
+                        <i class="bi bi-plus"></i> Nuevo Técnico
+                    </button>
+                </div>
+                <div class="card-body">
+                    {% if tecnicos %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Código</th>
+                                        <th>Nombre</th>
+                                        <th>Estado</th>
+                                        <th>Especialidades</th>
+                                        <th>Fecha Ingreso</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for tecnico in tecnicos %}
+                                    <tr>
+                                        <td><strong>{{ tecnico.codigo_empleado }}</strong></td>
+                                        <td>{{ tecnico.nombre_completo }}</td>
+                                        <td>
+                                            <span class="badge bg-{% if tecnico.estado == 'activo' %}success{% elif tecnico.estado == 'vacaciones' %}warning{% else %}secondary{% endif %}">
+                                                {{ tecnico.get_estado_display }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            {% for especialidad in tecnico.especialidades.all %}
+                                                <span class="badge bg-info me-1">{{ especialidad.nombre }}</span>
+                                            {% empty %}
+                                                <small class="text-muted">Sin especialidades</small>
+                                            {% endfor %}
+                                        </td>
+                                        <td>{{ tecnico.fecha_ingreso }}</td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <a href="{% url 'tecnicos:detail' tecnico.pk %}" class="btn btn-sm btn-outline-primary">
+                                                    <i class="bi bi-eye"></i> Ver
+                                                </a>
+                                                <a href="{% url 'tecnicos:edit' tecnico.pk %}" class="btn btn-sm btn-outline-secondary">
+                                                    <i class="bi bi-pencil"></i> Editar
+                                                </a>
+                                                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ tecnico.pk }}">
+                                                    <i class="bi bi-trash"></i> Eliminar
+                                                </button>
+                                            </div>
+                                            <!-- Modal moved to end of file -->
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="bi bi-people display-1 text-muted"></i>
+                            <h4 class="mt-3">No hay técnicos registrados</h4>
+                            <p class="text-muted">Comienza agregando el primer técnico al sistema</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Nuevo Técnico -->
+<div class="modal fade" id="tecnicoModal" tabindex="-1" aria-labelledby="tecnicoModalLabel" aria-hidden="true" style="pointer-events: auto !important; z-index: 9999 !important;" data-bs-backdrop="false" data-bs-keyboard="false">
+    <div class="modal-dialog modal-xl" style="pointer-events: auto !important; z-index: 10000 !important;">
+        <div class="modal-content" style="pointer-events: auto !important; z-index: 10001 !important;">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="tecnicoModalLabel">
+                    <i class="bi bi-person-plus"></i> Nuevo Técnico
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" enctype="multipart/form-data" id="tecnicoForm" action="{% url 'tecnicos:create' %}" style="pointer-events: auto !important;">
+                {% csrf_token %}
+                <div class="modal-body" style="pointer-events: auto !important; z-index: 10002 !important;">
+                    <div class="alert alert-info">
+                        <strong>¡Modal funcionando!</strong> Los campos del formulario están disponibles para edición.
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="id_first_name" class="form-label">Nombre *</label>
+                            <input type="text" name="first_name" class="form-control" maxlength="150" required id="id_first_name" placeholder="Ingresa el nombre" style="pointer-events: auto !important; z-index: 10004 !important; position: relative !important;">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="id_last_name" class="form-label">Apellido *</label>
+                            <input type="text" name="last_name" class="form-control" maxlength="150" required id="id_last_name" placeholder="Ingresa el apellido" style="pointer-events: auto !important; z-index: 10004 !important; position: relative !important;">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="id_rut" class="form-label">RUT *</label>
+                            <input type="text" name="rut" class="form-control" placeholder="12.345.678-9" id="id_rut" required style="pointer-events: auto !important; z-index: 10004 !important; position: relative !important;">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="id_fecha_nacimiento" class="form-label">Fecha de Nacimiento</label>
+                            <input type="date" name="fecha_nacimiento" class="form-control" id="id_fecha_nacimiento" style="pointer-events: auto !important; z-index: 10004 !important; position: relative !important;">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="id_ubicacion" class="form-label">Ubicación</label>
+                            <select name="ubicacion" class="form-select" id="id_ubicacion" style="pointer-events: auto !important; z-index: 10004 !important; position: relative !important;">
+                                <option value="">Seleccionar ubicación</option>
+                                <option value="santiago">Santiago</option>
+                                <option value="valparaiso">Valparaíso</option>
+                                <option value="concepcion">Concepción</option>
+                                <option value="antofagasta">Antofagasta</option>
+                                <option value="temuco">Temuco</option>
+                                <option value="iquique">Iquique</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="id_email" class="form-label">Email *</label>
+                            <input type="email" name="email" class="form-control" maxlength="320" required id="id_email" placeholder="correo@ejemplo.com" style="pointer-events: auto !important; z-index: 10004 !important; position: relative !important;">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="id_direccion" class="form-label">Dirección</label>
+                        <textarea name="direccion" class="form-control" rows="3" id="id_direccion" style="pointer-events: auto !important; z-index: 10004 !important; position: relative !important;"></textarea>
+                    </div>
+
+                    <!-- Información Laboral -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h6 class="mb-0">
+                                <i class="bi bi-briefcase"></i> Información Laboral
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_departamento" class="form-label">Departamento</label>
+                                    <select name="departamento" class="form-select" id="id_departamento" style="pointer-events: auto !important; z-index: 10004 !important; position: relative !important;">
+                                        <option value="">Seleccionar departamento</option>
+                                        <option value="operaciones">Operaciones</option>
+                                        <option value="mantenimiento">Mantenimiento</option>
+                                        <option value="administracion">Administración</option>
+                                        <option value="ventas">Ventas</option>
+                                        <option value="soporte">Soporte Técnico</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_puesto" class="form-label">Puesto</label>
+                                    <input type="text" name="puesto" class="form-control" id="id_puesto" style="pointer-events: auto !important; z-index: 10004 !important; position: relative !important;">
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_fecha_ingreso" class="form-label">Fecha de Ingreso</label>
+                                    <input type="date" name="fecha_ingreso" class="form-control" id="id_fecha_ingreso" style="pointer-events: auto !important; z-index: 10004 !important; position: relative !important;">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_codigo_empleado" class="form-label">Código de Empleado *</label>
+                                    <input type="text" name="codigo_empleado" class="form-control" maxlength="20" id="id_codigo_empleado" required style="pointer-events: auto !important; z-index: 10004 !important; position: relative !important;">
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_estado" class="form-label">Estado</label>
+                                    <select name="estado" class="form-select" id="id_estado" style="pointer-events: auto !important; z-index: 10004 !important; position: relative !important;">
+                                        <option value="">Seleccionar estado</option>
+                                        <option value="activo">Activo</option>
+                                        <option value="inactivo">Inactivo</option>
+                                        <option value="vacaciones">En Vacaciones</option>
+                                        <option value="licencia">En Licencia</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_salario_base" class="form-label">Salario Base</label>
+                                    <input type="number" name="salario_base" class="form-control" step="0.01" id="id_salario_base" style="pointer-events: auto !important; z-index: 10004 !important; position: relative !important;">
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_prevision" class="form-label">Previsión</label>
+                                    <select name="prevision" class="form-select" id="id_prevision" style="pointer-events: auto !important; z-index: 10004 !important; position: relative !important;">
+                                        <option value="">Seleccionar previsión</option>
+                                        <option value="fonasa">FONASA</option>
+                                        <option value="isapre_banmedica">Isapre Banmédica</option>
+                                        <option value="isapre_colmena">Isapre Colmena</option>
+                                        <option value="isapre_consalud">Isapre Consalud</option>
+                                        <option value="isapre_cruz_blanca">Isapre Cruz Blanca</option>
+                                        <option value="isapre_vida_tres">Isapre Vida Tres</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_afp" class="form-label">AFP</label>
+                                    <select name="afp" class="form-select" id="id_afp" style="pointer-events: auto !important; z-index: 10004 !important; position: relative !important;">
+                                        <option value="">Seleccionar AFP</option>
+                                        <option value="afp_capital">AFP Capital</option>
+                                        <option value="afp_provida">AFP Provida</option>
+                                        <option value="afp_habitat">AFP Habitat</option>
+                                        <option value="afp_planvital">AFP PlanVital</option>
+                                        <option value="afp_cuprum">AFP Cuprum</option>
+                                        <option value="afp_modelo">AFP Modelo</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Especialidades</label>
+                                <div class="row">
+                                    <div class="col-md-4 mb-2">
+                                        <div class="form-check">
+                                            <input type="checkbox" name="especialidades" value="1" class="form-check-input" id="id_especialidades_0" style="pointer-events: auto !important; z-index: 10004 !important; position: relative !important;">
+                                            <label class="form-check-label" for="id_especialidades_0">
+                                                Electricidad
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-2">
+                                        <div class="form-check">
+                                            <input type="checkbox" name="especialidades" value="2" class="form-check-input" id="id_especialidades_1" style="pointer-events: auto !important; z-index: 10004 !important; position: relative !important;">
+                                            <label class="form-check-label" for="id_especialidades_1">
+                                                Redes
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Información de Contacto -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h6 class="mb-0">
+                                <i class="bi bi-phone"></i> Información de Contacto
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_telefono" class="form-label">Teléfono</label>
+                                    <input type="text" name="telefono" class="form-control" placeholder="+56 9 1234 5678" id="id_telefono" style="pointer-events: auto !important; z-index: 10004 !important; position: relative !important;">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_telefono_emergencia" class="form-label">Teléfono de Emergencia</label>
+                                    <input type="text" name="telefono_emergencia" class="form-control" placeholder="+56 9 1234 5678" id="id_telefono_emergencia" style="pointer-events: auto !important; z-index: 10004 !important; position: relative !important;">
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_nombre_emergencia" class="form-label">Contacto de Emergencia</label>
+                                    <input type="text" name="nombre_emergencia" class="form-control" id="id_nombre_emergencia" style="pointer-events: auto !important; z-index: 10004 !important; position: relative !important;">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_linkedin" class="form-label">LinkedIn</label>
+                                    <input type="url" name="linkedin" class="form-control" placeholder="https://linkedin.com/in/usuario" id="id_linkedin" style="pointer-events: auto !important; z-index: 10004 !important; position: relative !important;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Información Adicional -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h6 class="mb-0">
+                                <i class="bi bi-info-circle"></i> Información Adicional
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_foto" class="form-label">Foto de Perfil</label>
+                                    <input type="file" name="foto" class="form-control" accept="image/*" id="id_foto" style="pointer-events: auto !important; z-index: 10004 !important; position: relative !important;">
+                                    <div class="form-text">Formatos permitidos: JPG, PNG, GIF. Tamaño máximo: 5MB</div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_postre_favorito" class="form-label">Postre Favorito</label>
+                                    <input type="text" name="postre_favorito" class="form-control" maxlength="100" id="id_postre_favorito" style="pointer-events: auto !important; z-index: 10004 !important; position: relative !important;">
+                                    <div class="form-text">Campo opcional y divertido 😊</div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="id_observaciones" class="form-label">Observaciones</label>
+                                <textarea name="observaciones" class="form-control" rows="4" id="id_observaciones" style="pointer-events: auto !important; z-index: 10004 !important; position: relative !important;"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x"></i> Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check"></i> Crear Técnico
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+    <style>
+        /* Estilos específicos para el modal de técnicos */
+        .modal-content {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
+            border-radius: 15px 15px 0 0;
+            border: none;
+        }
+
+        .modal-title {
+            color: white;
+            font-weight: 600;
+        }
+
+        /* CSS ULTRA-AGRESIVO PARA FORZAR INTERACTIVIDAD */
+        #tecnicoModal,
+        #tecnicoModal *,
+        #tecnicoModal input,
+        #tecnicoModal select,
+        #tecnicoModal textarea,
+        #tecnicoModal button,
+        #tecnicoModal .form-control,
+        #tecnicoModal .form-select,
+        #tecnicoModal .btn {
+            pointer-events: auto !important;
+            cursor: auto !important;
+        }
+
+        /* Z-INDEX EXTREMADAMENTE ALTOS */
+        #tecnicoModal {
+            z-index: 9999 !important;
+        }
+
+        #tecnicoModal .modal-dialog {
+            z-index: 10000 !important;
+        }
+
+        #tecnicoModal .modal-content {
+            z-index: 10001 !important;
+        }
+
+        #tecnicoModal .modal-body {
+            z-index: 10002 !important;
+        }
+
+        #tecnicoModal .modal-backdrop {
+            z-index: 10003 !important;
+        }
+
+        /* TODOS los inputs, selects, textareas y buttons FUERZAN z-index alto */
+        #tecnicoModal input,
+        #tecnicoModal select,
+        #tecnicoModal textarea,
+        #tecnicoModal button,
+        #tecnicoModal .form-control,
+        #tecnicoModal .form-select,
+        #tecnicoModal .btn {
+            z-index: 10004 !important;
+            position: relative !important;
+            pointer-events: auto !important;
+            cursor: auto !important;
+        }
+
+        /* Cursors específicos */
+        #tecnicoModal input[type="text"],
+        #tecnicoModal input[type="email"],
+        #tecnicoModal input[type="date"],
+        #tecnicoModal input[type="number"],
+        #tecnicoModal input[type="checkbox"],
+        #tecnicoModal select,
+        #tecnicoModal textarea {
+            cursor: text !important;
+        }
+
+        #tecnicoModal button,
+        #tecnicoModal .btn {
+            cursor: pointer !important;
+        }
+
+        /* REMOVER cualquier backdrop o overlay problemático */
+        .modal-backdrop {
+            pointer-events: none !important;
+        }
+
+        /* Cursors apropiados */
+        input[type="text"],
+        input[type="email"],
+        input[type="date"],
+        input[type="number"],
+        input[type="checkbox"],
+        select,
+        textarea {
+            cursor: text !important;
+        }
+
+        button[type="submit"],
+        button[type="button"] {
+            cursor: pointer !important;
+        }
+
+        /* Focus visual mejorado */
+        .form-control:focus,
+        .form-select:focus,
+        textarea:focus,
+        input:focus,
+        select:focus {
+            border-color: #8B5CF6;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.25);
+            outline: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
+            border: none;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+        }
+
+        .alert-info {
+            background: linear-gradient(135deg, #e8f4fd 0%, #d1ecf1 100%);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            color: #495057;
+        }
+    </style>
+
+    {% block extra_js %}
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('🚀 Modal cargado - Forzando interactividad...');
+
+        // Función para forzar interactividad cada 500ms
+        function forceModalInteractivity() {
+            const modal = document.getElementById('tecnicoModal');
+            if (modal && modal.classList.contains('show')) {
+                console.log('🔧 Forzando interactividad del modal...');
+
+                // Forzar pointer-events en todos los elementos del modal
+                const allElements = modal.querySelectorAll('*');
+                allElements.forEach(element => {
+                    element.style.pointerEvents = 'auto';
+                    element.style.cursor = 'auto';
+                });
+
+                // Específicamente los inputs y controles
+                const inputs = modal.querySelectorAll('input, select, textarea, button');
+                inputs.forEach(input => {
+                    input.style.pointerEvents = 'auto';
+                    input.style.cursor = input.type === 'submit' || input.type === 'button' ? 'pointer' : 'text';
+                    input.disabled = false;
+                    input.style.zIndex = '10005';
+                    input.style.position = 'relative';
+                });
+
+                console.log('✅ Modal interactivo forzado');
+            }
+        }
+
+        // Ejecutar inmediatamente
+        forceModalInteractivity();
+
+        // Y cada 500ms mientras el modal esté abierto
+        setInterval(forceModalInteractivity, 500);
+
+        // También cuando se abra el modal
+        const modalElement = document.getElementById('tecnicoModal');
+        if (modalElement) {
+            modalElement.addEventListener('shown.bs.modal', function() {
+                console.log('🚪 Modal abierto - Aplicando interactividad');
+                setTimeout(forceModalInteractivity, 100);
+            });
+        }
+
+        console.log('✅ Sistema de interactividad del modal activo');
+    });
+    </script>
+    {% endblock %}
+
+{% for tecnico in tecnicos %}
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal{{ tecnico.pk }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ tecnico.pk }}" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-light p-3">
+                <h5 class="modal-title text-danger fw-bold" id="deleteModalLabel{{ tecnico.pk }}">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>Confirmar Eliminación
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center">
+                    <p class="mb-3">¿Estás seguro de eliminar al siguiente técnico?</p>
+                    <h5 class="fw-bold text-danger mb-3">{{ tecnico.nombre_completo }}</h5>
+                    <p class="text-muted small mb-3">Código: {{ tecnico.codigo_empleado }}</p>
+                    <div class="alert alert-danger" role="alert">
+                        <div class="d-flex">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            <div>
+                                <strong>¡Atención!</strong>
+                                <p class="mb-0">Esta acción es irreversible y eliminará permanentemente todos los datos asociados.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-lg me-1"></i> Cancelar
+                </button>
+                <form action="{% url 'tecnicos:delete' tecnico.pk %}" method="post" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash3 me-1"></i> Eliminar
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+{% endblock %}

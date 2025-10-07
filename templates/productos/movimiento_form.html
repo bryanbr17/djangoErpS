@@ -1,0 +1,221 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} - Productos{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard:index' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'productos:list' %}">Productos</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'productos:detail' producto.pk %}">{{ producto.nombre }}</a></li>
+                    <li class="breadcrumb-item active">Nuevo Movimiento</li>
+                </ol>
+            </nav>
+            <h1 class="h3 mb-0">{{ title }}</h1>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-arrow-left-right"></i> Movimiento de Inventario
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.tipo.id_for_label }}" class="form-label">{{ form.tipo.label }}</label>
+                                {{ form.tipo }}
+                                {% if form.tipo.errors %}
+                                    <div class="text-danger small">{{ form.tipo.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.cantidad.id_for_label }}" class="form-label">{{ form.cantidad.label }}</label>
+                                {{ form.cantidad }}
+                                {% if form.cantidad.errors %}
+                                    <div class="text-danger small">{{ form.cantidad.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.motivo.id_for_label }}" class="form-label">{{ form.motivo.label }}</label>
+                            {{ form.motivo }}
+                            {% if form.motivo.errors %}
+                                <div class="text-danger small">{{ form.motivo.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.documento_referencia.id_for_label }}" class="form-label">{{ form.documento_referencia.label }}</label>
+                            {{ form.documento_referencia }}
+                            {% if form.documento_referencia.errors %}
+                                <div class="text-danger small">{{ form.documento_referencia.errors.0 }}</div>
+                            {% endif %}
+                            <div class="form-text">Ej: Factura #123, Orden de compra #456, etc.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.observaciones.id_for_label }}" class="form-label">{{ form.observaciones.label }}</label>
+                            {{ form.observaciones }}
+                            {% if form.observaciones.errors %}
+                                <div class="text-danger small">{{ form.observaciones.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="{% url 'productos:detail' producto.pk %}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Cancelar
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check"></i> Registrar Movimiento
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-md-4">
+            <!-- Información del producto -->
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="bi bi-box"></i> Información del Producto
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        {% if producto.imagen %}
+                            <img src="{{ producto.imagen.url }}" class="img-fluid rounded" style="max-height: 100px;">
+                        {% else %}
+                            <div class="bg-light rounded d-flex align-items-center justify-content-center" style="height: 100px;">
+                                <i class="bi bi-image text-muted" style="font-size: 2rem;"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <h6 class="text-center">{{ producto.nombre }}</h6>
+                    <p class="text-center text-muted">{{ producto.codigo }}</p>
+                    
+                    <hr>
+                    
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <h5 class="{% if producto.necesita_restock %}text-danger{% else %}text-success{% endif %}">
+                                {{ producto.stock_actual }}
+                            </h5>
+                            <small class="text-muted">Stock Actual</small>
+                        </div>
+                        <div class="col-6">
+                            <h5 class="text-warning">{{ producto.stock_minimo }}</h5>
+                            <small class="text-muted">Stock Mínimo</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tipos de movimiento -->
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="bi bi-info-circle"></i> Tipos de Movimiento
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <ul class="small mb-0">
+                        <li><strong>Entrada:</strong> Suma al stock actual</li>
+                        <li><strong>Salida:</strong> Resta del stock actual</li>
+                        <li><strong>Ajuste:</strong> Establece un stock específico</li>
+                        <li><strong>Transferencia:</strong> Movimiento entre ubicaciones</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Calculadora de stock -->
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="bi bi-calculator"></i> Calculadora de Stock
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div id="stock-calculator">
+                        <p class="mb-1"><strong>Stock actual:</strong> <span id="stock-actual">{{ producto.stock_actual }}</span></p>
+                        <p class="mb-1"><strong>Nuevo stock:</strong> <span id="stock-nuevo">{{ producto.stock_actual }}</span></p>
+                        <p class="mb-0"><strong>Diferencia:</strong> <span id="diferencia">0</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const stockActual = {{ producto.stock_actual }};
+
+function calcularNuevoStock() {
+    const tipo = document.getElementById('{{ form.tipo.id_for_label }}').value;
+    const cantidad = parseInt(document.getElementById('{{ form.cantidad.id_for_label }}').value) || 0;
+    
+    let nuevoStock = stockActual;
+    let diferencia = 0;
+    
+    if (tipo === 'entrada') {
+        nuevoStock = stockActual + cantidad;
+        diferencia = cantidad;
+    } else if (tipo === 'salida') {
+        nuevoStock = Math.max(0, stockActual - cantidad);
+        diferencia = -cantidad;
+    } else if (tipo === 'ajuste') {
+        nuevoStock = cantidad;
+        diferencia = cantidad - stockActual;
+    } else if (tipo === 'transferencia') {
+        nuevoStock = Math.max(0, stockActual - cantidad);
+        diferencia = -cantidad;
+    }
+    
+    document.getElementById('stock-nuevo').textContent = nuevoStock;
+    document.getElementById('diferencia').textContent = diferencia > 0 ? '+' + diferencia : diferencia;
+    
+    // Cambiar color según el resultado
+    const stockNuevoElement = document.getElementById('stock-nuevo');
+    if (nuevoStock <= {{ producto.stock_minimo }}) {
+        stockNuevoElement.className = 'text-danger';
+    } else {
+        stockNuevoElement.className = 'text-success';
+    }
+}
+
+// Event listeners
+document.getElementById('{{ form.tipo.id_for_label }}').addEventListener('change', calcularNuevoStock);
+document.getElementById('{{ form.cantidad.id_for_label }}').addEventListener('input', calcularNuevoStock);
+
+// Sugerencias de motivo según el tipo
+document.getElementById('{{ form.tipo.id_for_label }}').addEventListener('change', function() {
+    const tipo = this.value;
+    const motivoField = document.getElementById('{{ form.motivo.id_for_label }}');
+    
+    const sugerencias = {
+        'entrada': 'Compra de mercadería',
+        'salida': 'Venta a cliente',
+        'ajuste': 'Ajuste de inventario',
+        'transferencia': 'Transferencia entre sucursales'
+    };
+    
+    if (sugerencias[tipo] && !motivoField.value) {
+        motivoField.value = sugerencias[tipo];
+    }
+});
+</script>
+{% endblock %}
