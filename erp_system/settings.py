@@ -93,7 +93,7 @@ WSGI_APPLICATION = 'erp_system.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'bryanbr17',
+        'NAME': 'bryan111',
         'USER': 'root',
         'PASSWORD': '',  # XAMPP por defecto no tiene contraseña
         'HOST': 'localhost',

@@ -1,0 +1,224 @@
+<!-- Encabezado del perfil -->
+<div class="d-flex align-items-start mb-4">
+    <div class="flex-shrink-0 me-4">
+        {% if tecnico.foto %}
+            <img src="{{ tecnico.foto.url }}" class="rounded-circle" width="80" height="80" alt="{{ tecnico.get_full_name }}">
+        {% else %}
+            <img src="https://ui-avatars.com/api/?name={{ tecnico.first_name|urlencode }}+{{ tecnico.last_name|urlencode }}&background=2563eb&color=fff" 
+                 class="rounded-circle" width="80" height="80" alt="{{ tecnico.get_full_name }}">
+        {% endif %}
+    </div>
+    <div class="flex-grow-1">
+        <h4 class="mb-1">{{ tecnico.get_full_name }}</h4>
+        <p class="text-muted mb-2">{{ tecnico.cargo|default:"Técnico" }}</p>
+        <div class="d-flex gap-2">
+            <span class="badge bg-{% if tecnico.estado == 'activo' %}success{% elif tecnico.estado == 'vacaciones' %}warning{% else %}secondary{% endif %} bg-opacity-10 text-{% if tecnico.estado == 'activo' %}success{% elif tecnico.estado == 'vacaciones' %}warning{% else %}secondary{% endif %}">
+                {{ tecnico.get_estado_display|default:"Inactivo" }}
+            </span>
+            {% if tecnico.departamento %}
+            <span class="badge bg-light text-dark">{{ tecnico.departamento }}</span>
+            {% endif %}
+        </div>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{% url 'tecnicos:edit' tecnico.pk %}" class="btn btn-outline-primary btn-sm" data-bs-toggle="tooltip" title="Editar técnico">
+            <i class="bi bi-pencil"></i> Editar
+        </a>
+        <a href="{% url 'tecnicos:vacaciones_create' tecnico.pk %}" class="btn btn-outline-success btn-sm" data-bs-toggle="tooltip" title="Solicitar vacaciones">
+            <i class="bi bi-calendar-plus"></i> Vacaciones
+        </a>
+    </div>
+</div>
+
+<!-- Pestañas -->
+<ul class="nav nav-tabs mb-4" id="tecnicoTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="info-tab" data-bs-toggle="tab" 
+                data-bs-target="#info" type="button" role="tab" aria-controls="info" 
+                aria-selected="true">
+            <i class="bi bi-info-circle me-1"></i> Información
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="documentos-tab" data-bs-toggle="tab" 
+                data-bs-target="#documentos" type="button" role="tab" 
+                aria-controls="documentos" aria-selected="false">
+            <i class="bi bi-files me-1"></i> Documentos
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="vacaciones-tab" data-bs-toggle="tab" 
+                data-bs-target="#vacaciones" type="button" role="tab" 
+                aria-controls="vacaciones" aria-selected="false">
+            <i class="bi bi-calendar3 me-1"></i> Vacaciones
+        </button>
+    </li>
+</ul>
+
+<!-- Contenido de las pestañas -->
+<div class="tab-content" id="tecnicoTabsContent">
+    <!-- Pestaña de Información -->
+    <div class="tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info-tab">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <p class="mb-1 text-muted small">Código</p>
+                    <p class="mb-3">{{ tecnico.codigo_empleado|default:"No especificado" }}</p>
+                </div>
+                <div class="mb-3">
+                    <p class="mb-1 text-muted small">Email</p>
+                    <p class="mb-3">{{ tecnico.email|default:"No especificado" }}</p>
+                </div>
+                <div class="mb-3">
+                    <p class="mb-1 text-muted small">Teléfono</p>
+                    <p class="mb-3">{{ tecnico.telefono|default:"No especificado" }}</p>
+                </div>
+                <div class="mb-3">
+                    <p class="mb-1 text-muted small">Fecha de Nacimiento</p>
+                    <p class="mb-3">{{ tecnico.fecha_nacimiento|date:"d/m/Y"|default:"No especificada" }}</p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <p class="mb-1 text-muted small">Fecha de Ingreso</p>
+                    <p class="mb-3">{{ tecnico.fecha_ingreso|date:"d/m/Y"|default:"No especificada" }}</p>
+                </div>
+                <div class="mb-3">
+                    <p class="mb-1 text-muted small">Previsión</p>
+                    <p class="mb-3">{{ tecnico.prevision|default:"No especificada" }}</p>
+                </div>
+                <div class="mb-3">
+                    <p class="mb-1 text-muted small">AFP</p>
+                    <p class="mb-3">{{ tecnico.afp|default:"No especificada" }}</p>
+                </div>
+                <div class="mb-3">
+                    <p class="mb-1 text-muted small">Dirección</p>
+                    <p class="mb-3">{{ tecnico.direccion|default:"No especificada" }}</p>
+                </div>
+            </div>
+        </div>
+        
+        {% if tecnico.notas %}
+        <div class="card bg-light mt-3">
+            <div class="card-body">
+                <h6 class="card-title">Notas</h6>
+                <p class="card-text">{{ tecnico.notas|linebreaksbr }}</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Pestaña de Documentos -->
+    <div class="tab-pane fade" id="documentos" role="tabpanel" aria-labelledby="documentos-tab">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 class="mb-0">Documentos adjuntos</h6>
+            <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#subirDocumentoModal">
+                <i class="bi bi-upload"></i> Subir documento
+            </button>
+        </div>
+        
+        {% if documentos %}
+            <div class="list-group">
+                {% for documento in documentos %}
+                <div class="list-group-item">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="bi bi-file-earmark-text me-2"></i>
+                            <a href="{{ documento.archivo.url }}" target="_blank">{{ documento.nombre|default:"Documento sin nombre" }}</a>
+                            <small class="text-muted d-block">{{ documento.fecha_subida|date:"d/m/Y H:i" }}</small>
+                        </div>
+                        <div>
+                            <a href="{{ documento.archivo.url }}" class="btn btn-sm btn-outline-primary" download>
+                                <i class="bi bi-download"></i>
+                            </a>
+                            <a href="#" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Estás seguro de que deseas eliminar este documento?')">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle"></i> No hay documentos cargados para este técnico.
+            </div>
+        {% endif %}
+    </div>
+    
+    <!-- Pestaña de Vacaciones -->
+    <div class="tab-pane fade" id="vacaciones" role="tabpanel" aria-labelledby="vacaciones-tab">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 class="mb-0">Registro de vacaciones</h6>
+            <a href="{% url 'tecnicos:vacaciones_create' tecnico.pk %}" class="btn btn-sm btn-primary">
+                <i class="bi bi-plus-lg"></i> Nueva solicitud
+            </a>
+        </div>
+        
+        {% if vacaciones %}
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Período</th>
+                            <th>Días</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for vac in vacaciones %}
+                        <tr>
+                            <td>Del {{ vac.fecha_inicio|date:"d/m/Y" }} al {{ vac.fecha_fin|date:"d/m/Y" }}</td>
+                            <td>{{ vac.dias }} días</td>
+                            <td>
+                                <span class="badge bg-{% if vac.estado == 'aprobado' %}success{% elif vac.estado == 'pendiente' %}warning{% else %}secondary{% endif %}">
+                                    {{ vac.get_estado_display }}
+                                </span>
+                            </td>
+                            <td>
+                                <a href="{% url 'tecnicos:vacaciones_detail' vac.pk %}" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle"></i> No hay registros de vacaciones para este técnico.
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Modal para subir documento -->
+<div class="modal fade" id="subirDocumentoModal" tabindex="-1" aria-labelledby="subirDocumentoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="subirDocumentoModalLabel">Subir documento</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" action="{% url 'tecnicos:documento_upload' tecnico.pk %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="documentoNombre" class="form-label">Nombre del documento</label>
+                        <input type="text" class="form-control" id="documentoNombre" name="nombre" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="documentoArchivo" class="form-label">Archivo</label>
+                        <input class="form-control" type="file" id="documentoArchivo" name="archivo" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Subir</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

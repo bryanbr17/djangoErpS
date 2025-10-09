@@ -1,0 +1,215 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+        <div class="modal-header bg-light">
+            <h5 class="modal-title">Gestión de Técnicos</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-0">
+            <div class="container-fluid">
+                <div class="row g-0" style="min-height: 70vh;">
+                    <!-- Panel izquierdo: Lista de Técnicos -->
+                    <div class="col-md-4 border-end">
+                        <div class="p-3">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h6 class="mb-0 fw-bold">Lista de Técnicos</h6>
+                                <button class="btn btn-sm btn-primary">
+                                    <i class="bi bi-plus-lg"></i> Nuevo Técnico
+                                </button>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-end-0">
+                                        <i class="bi bi-search text-muted"></i>
+                                    </span>
+                                    <input type="text" class="form-control border-start-0" placeholder="Buscar técnico...">
+                                </div>
+                            </div>
+                            
+                            <div class="row g-2 mb-3">
+                                <div class="col">
+                                    <select class="form-select form-select-sm">
+                                        <option>Todos los departamentos</option>
+                                        <option>Operaciones</option>
+                                        <option>Soporte Técnico</option>
+                                        <option>Desarrollo</option>
+                                    </select>
+                                </div>
+                                <div class="col">
+                                    <select class="form-select form-select-sm">
+                                        <option>Todos los estados</option>
+                                        <option>Activo</option>
+                                        <option>Vacaciones</option>
+                                        <option>Inactivo</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="list-group list-group-flush">
+                                <!-- Ejemplo de ítem de técnico -->
+                                <a href="#" class="list-group-item list-group-item-action border-0 py-3">
+                                    <div class="d-flex align-items-center">
+                                        <div class="position-relative me-3">
+                                            <img src="https://ui-avatars.com/api/?name=Juan+Perez&background=2563eb&color=fff" 
+                                                 class="rounded-circle" width="40" height="40" alt="Juan Perez">
+                                            <span class="position-absolute bottom-0 end-0 bg-success rounded-circle p-1 border border-2 border-white"></span>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-0">Juan Pérez</h6>
+                                            <small class="text-muted">Técnico Senior</small>
+                                        </div>
+                                        <span class="badge bg-success bg-opacity-10 text-success">Activo</span>
+                                    </div>
+                                </a>
+                                <!-- Más ítems de técnicos irían aquí -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Panel derecho: Detalle del Técnico -->
+                    <div class="col-md-8">
+                        <div class="p-4">
+                            <!-- Encabezado del perfil -->
+                            <div class="d-flex align-items-start mb-4">
+                                <div class="flex-shrink-0 me-4">
+                                    <img src="https://ui-avatars.com/api/?name=Juan+Perez&background=2563eb&color=fff&size=80" 
+                                         class="rounded-circle" width="80" height="80" alt="Juan Perez">
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h4 class="mb-1">Juan Pérez</h4>
+                                    <p class="text-muted mb-2">Técnico Senior</p>
+                                    <div class="d-flex gap-2">
+                                        <span class="badge bg-success bg-opacity-10 text-success">Activo</span>
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary">
+                                    <i class="bi bi-pencil me-1"></i> Editar
+                                </button>
+                            </div>
+                            
+                            <!-- Pestañas -->
+                            <ul class="nav nav-tabs mb-4" id="tecnicoTabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="info-tab" data-bs-toggle="tab" 
+                                            data-bs-target="#info" type="button" role="tab" aria-controls="info" 
+                                            aria-selected="true">Información</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="adjuntos-tab" data-bs-toggle="tab" 
+                                            data-bs-target="#adjuntos" type="button" role="tab" 
+                                            aria-controls="adjuntos" aria-selected="false">Adjuntos</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="inventario-tab" data-bs-toggle="tab" 
+                                            data-bs-target="#inventario" type="button" role="tab" 
+                                            aria-controls="inventario" aria-selected="false">Inventario Técnico</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="vacaciones-tab" data-bs-toggle="tab" 
+                                            data-bs-target="#vacaciones" type="button" role="tab" 
+                                            aria-controls="vacaciones" aria-selected="false">Vacaciones</button>
+                                </li>
+                            </ul>
+                            
+                            <!-- Contenido de las pestañas -->
+                            <div class="tab-content" id="tecnicoTabsContent">
+                                <!-- Pestaña de Información -->
+                                <div class="tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info-tab">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <p class="mb-1 text-muted small">RUT</p>
+                                                <p class="mb-3">12.345.678-9</p>
+                                            </div>
+                                            <div class="mb-3">
+                                                <p class="mb-1 text-muted small">Ubicación</p>
+                                                <p class="mb-3">Santiago</p>
+                                            </div>
+                                            <div class="mb-3">
+                                                <p class="mb-1 text-muted small">Departamento</p>
+                                                <span class="badge bg-light text-dark">Operaciones</span>
+                                            </div>
+                                            <div class="mb-3">
+                                                <p class="mb-1 text-muted small">Fecha de Nacimiento</p>
+                                                <p class="mb-3">1990-05-15</p>
+                                            </div>
+                                            <div class="mb-3">
+                                                <p class="mb-1 text-muted small">Edad</p>
+                                                <p class="mb-3">35 años y 5 meses</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <p class="mb-1 text-muted small">Fecha de Incorporación</p>
+                                                <p class="mb-3">2020-03-01</p>
+                                            </div>
+                                            <div class="mb-3">
+                                                <p class="mb-1 text-muted small">Antigüedad</p>
+                                                <p class="mb-3">5 años y 8 meses</p>
+                                            </div>
+                                            <div class="mb-3">
+                                                <p class="mb-1 text-muted small">Email</p>
+                                                <p class="mb-3">juan.perez@empresa.com</p>
+                                            </div>
+                                            <div class="mb-3">
+                                                <p class="mb-1 text-muted small">Teléfono</p>
+                                                <p class="mb-3">+56 9 1234 5678</p>
+                                            </div>
+                                            <div class="mb-3">
+                                                <p class="mb-1 text-muted small">Teléfono Emergencia</p>
+                                                <p class="mb-3">+56 9 8765 4321</p>
+                                            </div>
+                                            <div class="mb-3">
+                                                <p class="mb-1 text-muted small">Nombre Emergencia</p>
+                                                <p class="mb-3">María Pérez</p>
+                                            </div>
+                                            <div class="mb-3">
+                                                <p class="mb-1 text-muted small">LinkedIn</p>
+                                                <a href="#" class="text-primary">Ver perfil</a>
+                                            </div>
+                                            <div class="mb-3">
+                                                <p class="mb-1 text-muted small">Postre Favorito</p>
+                                                <p class="mb-3">Tiramisu</p>
+                                            </div>
+                                            <div class="mb-3">
+                                                <p class="mb-1 text-muted small">Previsión</p>
+                                                <span class="badge bg-primary bg-opacity-10 text-primary">FONASA</span>
+                                            </div>
+                                            <div class="mb-3">
+                                                <p class="mb-1 text-muted small">AFP</p>
+                                                <span class="badge bg-light text-dark">AFP Capital</span>
+                                            </div>
+                                            <div class="mb-3">
+                                                <p class="mb-1 text-muted small">Estado</p>
+                                                <span class="badge bg-primary bg-opacity-10 text-primary">Activo</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Otras pestañas (vacías por ahora) -->
+                                <div class="tab-pane fade" id="adjuntos" role="tabpanel" aria-labelledby="adjuntos-tab">
+                                    <p class="text-muted">No hay archivos adjuntos.</p>
+                                </div>
+                                <div class="tab-pane fade" id="inventario" role="tabpanel" aria-labelledby="inventario-tab">
+                                    <p class="text-muted">No hay elementos en el inventario.</p>
+                                </div>
+                                <div class="tab-pane fade" id="vacaciones" role="tabpanel" aria-labelledby="vacaciones-tab">
+                                    <p class="text-muted">No hay registros de vacaciones.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cerrar</button>
+            <button type="button" class="btn btn-primary">Guardar cambios</button>
+        </div>
+    </div>
+</div>
+{% endblock %}

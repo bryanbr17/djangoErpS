@@ -6,174 +6,149 @@
 <div class="container-fluid">
     <div class="row mb-4">
         <div class="col-12">
-            <h1 class="h3 mb-0">Gestión de Técnicos</h1>
-            <p class="text-muted">Administra la información de los técnicos</p>
-        </div>
-    </div>
-
-    <!-- Filtros y búsqueda -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-body">
-                    <form method="get" class="row g-3">
-                        <div class="col-md-4">
-                            <label for="search" class="form-label">Buscar</label>
-                            <input type="text" class="form-control" id="search" name="search" 
-                                   value="{{ search }}" placeholder="Nombre, apellido o código...">
-                        </div>
-                        <div class="col-md-3">
-                            <label for="estado" class="form-label">Estado</label>
-                            <select class="form-select" id="estado" name="estado">
-                                <option value="">Todos los estados</option>
-                                {% for value, label in estados %}
-                                    <option value="{{ value }}" {% if estado_selected == value %}selected{% endif %}>
-                                        {{ label }}
-                                    </option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="col-md-3">
-                            <label for="especialidad" class="form-label">Especialidad</label>
-                            <select class="form-select" id="especialidad" name="especialidad">
-                                <option value="">Todas las especialidades</option>
-                                {% for esp in especialidades %}
-                                    <option value="{{ esp.id }}" {% if especialidad_selected == esp.id|stringformat:"s" %}selected{% endif %}>
-                                        {{ esp.nombre }}
-                                    </option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="col-md-2 d-flex align-items-end">
-                            <button type="submit" class="btn btn-outline-primary me-2">
-                                <i class="bi bi-search"></i> Buscar
-                            </button>
-                            <a href="{% url 'tecnicos:list' %}" class="btn btn-outline-secondary">
-                                <i class="bi bi-x"></i>
-                            </a>
-                        </div>
-                    </form>
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-0">Gestión de Técnicos</h1>
+                    <p class="text-muted mb-0">Administra toda la información del personal técnico en un solo lugar</p>
                 </div>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#nuevoTecnicoModal">
+                    <i class="bi bi-person-plus me-2"></i> Nuevo Técnico
+                </button>
             </div>
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Lista de Técnicos ({{ tecnicos.count }})</h5>
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tecnicoModal">
-                        <i class="bi bi-plus"></i> Nuevo Técnico
-                    </button>
-                </div>
-                <div class="card-body">
-                    {% if tecnicos %}
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Código</th>
-                                        <th>Nombre</th>
-                                        <th>Estado</th>
-                                        <th>Especialidades</th>
-                                        <th>Fecha Ingreso</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
+    <!-- Contenedor principal del gestor de técnicos -->
+    <div class="card shadow">
+        <div class="card-body p-0">
+            <div class="container-fluid">
+                <div class="container-fluid">
+                    <div class="row g-0" style="min-height: 70vh;">
+                        <!-- Panel izquierdo: Lista de Técnicos -->
+                        <div class="col-md-4 border-end">
+                            <div class="p-3">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h6 class="mb-0 fw-bold">Lista de Técnicos</h6>
+                                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#nuevoTecnicoModal">
+                                        <i class="bi bi-plus-lg"></i> Nuevo
+                                    </button>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-white border-end-0">
+                                            <i class="bi bi-search text-muted"></i>
+                                        </span>
+                                        <input type="text" class="form-control border-start-0" placeholder="Buscar técnico...">
+                                    </div>
+                                </div>
+                                
+                                <div class="row g-2 mb-3">
+                                    <div class="col">
+                                        <select class="form-select form-select-sm">
+                                            <option>Todos los departamentos</option>
+                                            <option>Operaciones</option>
+                                            <option>Soporte Técnico</option>
+                                            <option>Desarrollo</option>
+                                        </select>
+                                    </div>
+                                    <div class="col">
+                                        <select class="form-select form-select-sm">
+                                            <option>Todos los estados</option>
+                                            <option>Activo</option>
+                                            <option>Vacaciones</option>
+                                            <option>Inactivo</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="list-group list-group-flush" style="max-height: 60vh; overflow-y: auto;">
+                                    <!-- Lista de técnicos dinámica -->
                                     {% for tecnico in tecnicos %}
-                                    <tr>
-                                        <td><strong>{{ tecnico.codigo_empleado }}</strong></td>
-                                        <td>{{ tecnico.nombre_completo }}</td>
-                                        <td>
-                                            <span class="badge bg-{% if tecnico.estado == 'activo' %}success{% elif tecnico.estado == 'vacaciones' %}warning{% else %}secondary{% endif %}">
-                                                {{ tecnico.get_estado_display }}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            {% for especialidad in tecnico.especialidades.all %}
-                                                <span class="badge bg-info me-1">{{ especialidad.nombre }}</span>
-                                            {% empty %}
-                                                <small class="text-muted">Sin especialidades</small>
-                                            {% endfor %}
-                                        </td>
-                                        <td>{{ tecnico.fecha_ingreso }}</td>
-                                        <td>
-                                            <div class="btn-group" role="group">
-                                                <a href="{% url 'tecnicos:detail' tecnico.pk %}" class="btn btn-sm btn-outline-primary">
-                                                    <i class="bi bi-eye"></i> Ver
-                                                </a>
-                                                <a href="{% url 'tecnicos:edit' tecnico.pk %}" class="btn btn-sm btn-outline-secondary">
-                                                    <i class="bi bi-pencil"></i> Editar
-                                                </a>
-                                                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ tecnico.pk }}">
-                                                    <i class="bi bi-trash"></i> Eliminar
-                                                </button>
+                                    <a href="#" class="list-group-item list-group-item-action border-0 py-3 tecnico-item" 
+                                       data-tecnico-id="{{ tecnico.id }}"
+                                       onclick="cargarDetalleTecnico(event, '{{ tecnico.id }}')">
+                                        <div class="d-flex align-items-center">
+                                            <div class="position-relative me-3">
+                                                <img src="https://ui-avatars.com/api/?name={{ tecnico.first_name|urlencode }}+{{ tecnico.last_name|urlencode }}&background=2563eb&color=fff" 
+                                                     class="rounded-circle" width="40" height="40" alt="{{ tecnico.get_full_name }}">
+                                                <span class="position-absolute bottom-0 end-0 bg-{% if tecnico.estado == 'activo' %}success{% elif tecnico.estado == 'vacaciones' %}warning{% else %}secondary{% endif %} rounded-circle p-1 border border-2 border-white"></span>
                                             </div>
-                                            <!-- Modal moved to end of file -->
-                                        </td>
-                                    </tr>
+                                            <div class="flex-grow-1">
+                                                <h6 class="mb-0">{{ tecnico.get_full_name }}</h6>
+                                                <small class="text-muted">{{ tecnico.cargo|default:"Técnico" }}</small>
+                                            </div>
+                                            <span class="badge bg-{% if tecnico.estado == 'activo' %}success{% elif tecnico.estado == 'vacaciones' %}warning{% else %}secondary{% endif %} bg-opacity-10 text-{% if tecnico.estado == 'activo' %}success{% elif tecnico.estado == 'vacaciones' %}warning{% else %}secondary{% endif %}">
+                                                {{ tecnico.get_estado_display|default:"Inactivo" }}
+                                            </span>
+                                        </div>
+                                    </a>
+                                    {% empty %}
+                                    <div class="text-center py-4">
+                                        <i class="bi bi-people fs-1 text-muted"></i>
+                                        <p class="text-muted mt-2">No hay técnicos registrados</p>
+                                    </div>
                                     {% endfor %}
-                                </tbody>
-                            </table>
+                                </div>
+                            </div>
                         </div>
-                    {% else %}
-                        <div class="text-center py-5">
-                            <i class="bi bi-people display-1 text-muted"></i>
-                            <h4 class="mt-3">No hay técnicos registrados</h4>
-                            <p class="text-muted">Comienza agregando el primer técnico al sistema</p>
+                        
+                        <!-- Panel derecho: Detalle del Técnico -->
+                        <div class="col-md-8">
+                            <div id="detalle-tecnico" class="p-4">
+                                <div class="text-center py-5">
+                                    <i class="bi bi-person-lines-fill fs-1 text-muted"></i>
+                                    <h5 class="mt-3">Selecciona un técnico</h5>
+                                    <p class="text-muted">Haz clic en un técnico de la lista para ver sus detalles</p>
+                                </div>
+                            </div>
                         </div>
-                    {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Modal para Nuevo Técnico -->
-<div class="modal fade" id="tecnicoModal" tabindex="-1" aria-labelledby="tecnicoModalLabel" aria-hidden="true" style="pointer-events: auto !important; z-index: 9999 !important;" data-bs-backdrop="false" data-bs-keyboard="false">
-    <div class="modal-dialog modal-xl" style="pointer-events: auto !important; z-index: 10000 !important;">
-        <div class="modal-content" style="pointer-events: auto !important; z-index: 10001 !important;">
+<!-- Modal para Nuevo Técnico (oculto por defecto) -->
+<div class="modal fade" id="nuevoTecnicoModal" tabindex="-1" aria-labelledby="nuevoTecnicoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
             <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="tecnicoModalLabel">
+                <h5 class="modal-title" id="nuevoTecnicoModalLabel">
                     <i class="bi bi-person-plus"></i> Nuevo Técnico
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form method="post" enctype="multipart/form-data" id="tecnicoForm" action="{% url 'tecnicos:create' %}" style="pointer-events: auto !important;">
+            <form method="post" enctype="multipart/form-data" id="tecnicoForm" action="{% url 'tecnicos:create' %}">
                 {% csrf_token %}
-                <div class="modal-body" style="pointer-events: auto !important; z-index: 10002 !important;">
-                    <div class="alert alert-info">
-                        <strong>¡Modal funcionando!</strong> Los campos del formulario están disponibles para edición.
-                    </div>
-
+                <div class="modal-body">
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="id_first_name" class="form-label">Nombre *</label>
-                            <input type="text" name="first_name" class="form-control" maxlength="150" required id="id_first_name" placeholder="Ingresa el nombre" style="pointer-events: auto !important; z-index: 10004 !important; position: relative !important;">
+                            <input type="text" name="first_name" class="form-control" maxlength="150" required id="id_first_name" placeholder="Ingresa el nombre">
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="id_last_name" class="form-label">Apellido *</label>
-                            <input type="text" name="last_name" class="form-control" maxlength="150" required id="id_last_name" placeholder="Ingresa el apellido" style="pointer-events: auto !important; z-index: 10004 !important; position: relative !important;">
+                            <input type="text" name="last_name" class="form-control" maxlength="150" required id="id_last_name" placeholder="Ingresa el apellido">
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="id_rut" class="form-label">RUT *</label>
-                            <input type="text" name="rut" class="form-control" placeholder="12.345.678-9" id="id_rut" required style="pointer-events: auto !important; z-index: 10004 !important; position: relative !important;">
+                            <input type="text" name="rut" class="form-control" placeholder="12.345.678-9" id="id_rut" required>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="id_fecha_nacimiento" class="form-label">Fecha de Nacimiento</label>
-                            <input type="date" name="fecha_nacimiento" class="form-control" id="id_fecha_nacimiento" style="pointer-events: auto !important; z-index: 10004 !important; position: relative !important;">
+                            <input type="date" name="fecha_nacimiento" class="form-control" id="id_fecha_nacimiento">
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="id_ubicacion" class="form-label">Ubicación</label>
-                            <select name="ubicacion" class="form-select" id="id_ubicacion" style="pointer-events: auto !important; z-index: 10004 !important; position: relative !important;">
+                            <select name="ubicacion" class="form-select" id="id_ubicacion">
                                 <option value="">Seleccionar ubicación</option>
                                 <option value="santiago">Santiago</option>
                                 <option value="valparaiso">Valparaíso</option>
@@ -185,13 +160,13 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="id_email" class="form-label">Email *</label>
-                            <input type="email" name="email" class="form-control" maxlength="320" required id="id_email" placeholder="correo@ejemplo.com" style="pointer-events: auto !important; z-index: 10004 !important; position: relative !important;">
+                            <input type="email" name="email" class="form-control" maxlength="320" required id="id_email" placeholder="correo@ejemplo.com">
                         </div>
                     </div>
 
                     <div class="mb-3">
                         <label for="id_direccion" class="form-label">Dirección</label>
-                        <textarea name="direccion" class="form-control" rows="3" id="id_direccion" style="pointer-events: auto !important; z-index: 10004 !important; position: relative !important;"></textarea>
+                        <textarea name="direccion" class="form-control" rows="3" id="id_direccion"></textarea>
                     </div>
 
                     <!-- Información Laboral -->
@@ -373,8 +348,8 @@
 </div>
 
     <style>
-        /* Estilos específicos para el modal de técnicos */
-        .modal-content {
+        /* Estilos específicos para el gestor de técnicos */
+        .card {
             border: none;
             border-radius: 15px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
@@ -487,22 +462,25 @@
             box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.25);
             outline: none;
         }
-
         .btn-primary {
             background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
             border: none;
             box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
         }
 
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+        .list-group-item:hover {
+            background-color: #f8f9fa;
+            transform: translateX(5px);
+        }
+        
+        .list-group-item.active {
+            background-color: #f0f7ff;
+            border-left: 3px solid #0d6efd;
         }
 
         .alert-info {
             background: linear-gradient(135deg, #e8f4fd 0%, #d1ecf1 100%);
             border: 1px solid rgba(139, 92, 246, 0.2);
-            color: #495057;
         }
     </style>
 
@@ -538,6 +516,92 @@
             }
         }
 
+        // Función para cargar los detalles del técnico
+        function cargarDetalleTecnico(event, tecnicoId) {
+            // Prevenir el comportamiento por defecto del enlace
+            event.preventDefault();
+            
+            // Remover la clase active de todos los ítems
+            document.querySelectorAll('.tecnico-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Agregar clase active al ítem seleccionado
+            event.currentTarget.classList.add('active');
+            
+            // Mostrar loading
+            const detalleTecnico = document.getElementById('detalle-tecnico');
+            detalleTecnico.innerHTML = `
+                <div class="d-flex justify-content-center my-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                    </div>
+                </div>
+            `;
+            
+            // Hacer la petición AJAX para obtener los detalles
+            console.log(`Solicitando detalles para el técnico ID: ${tecnicoId}`);
+            fetch(`/tecnicos/${tecnicoId}/`, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+                .then(response => {
+                    console.log('Respuesta recibida:', response);
+                    if (!response.ok) {
+                        throw new Error(`Error en la petición: ${response.status} ${response.statusText}`);
+                    }
+                    return response.text();
+                })
+                .then(html => {
+                    console.log('Contenido HTML recibido:', html);
+                    
+                    // Verificar si la respuesta es un documento HTML completo o solo un fragmento
+                    if (html.trim().startsWith('<!DOCTYPE') || html.trim().startsWith('<html>')) {
+                        // Si es un documento HTML completo, extraer solo el contenido del contenedor
+                        const tempDiv = document.createElement('div');
+                        tempDiv.innerHTML = html;
+                        
+                        // Buscar el contenido principal
+                        const detalleContent = tempDiv.querySelector('.container') || tempDiv;
+                        detalleTecnico.innerHTML = detalleContent.innerHTML;
+                    } else {
+                        // Si es un fragmento HTML, usarlo directamente
+                        detalleTecnico.innerHTML = html;
+                    }
+                    
+                    // Inicializar tooltips
+                    const tooltipTriggerList = [].slice.call(detalleTecnico.querySelectorAll('[data-bs-toggle="tooltip"]'));
+                    tooltipTriggerList.map(function (tooltipTriggerEl) {
+                        return new bootstrap.Tooltip(tooltipTriggerEl);
+                    });
+                    
+                    // Inicializar pestañas si existen
+                    const tabElms = detalleTecnico.querySelectorAll('button[data-bs-toggle="tab"]');
+                    tabElms.forEach(tabEl => {
+                        new bootstrap.Tab(tabEl);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    detalleTecnico.innerHTML = `
+                        <div class="alert alert-danger">
+                            <i class="bi bi-exclamation-triangle"></i> Error al cargar los detalles del técnico. Por favor, recarga la página e intenta de nuevo.
+                        </div>
+                    `;
+                });
+        }
+        
+        // Manejar el clic en los ítems de la lista
+        document.querySelectorAll('.tecnico-item').forEach(item => {
+            item.addEventListener('click', function(event) {
+                const tecnicoId = this.getAttribute('data-tecnico-id');
+                if (tecnicoId) {
+                    cargarDetalleTecnico(event, tecnicoId);
+                }
+            });
+        });
+        
         // Ejecutar inmediatamente
         forceModalInteractivity();
 
@@ -553,7 +617,14 @@
             });
         }
 
-        console.log('✅ Sistema de interactividad del modal activo');
+        // Botón para abrir el modal
+        const nuevoTecnicoButton = document.getElementById('nuevoTecnicoModal');
+        if (nuevoTecnicoButton) {
+            nuevoTecnicoButton.addEventListener('click', function() {
+                const modal = new bootstrap.Modal(document.getElementById('tecnicoModal'));
+                modal.show();
+            });
+        }
     });
     </script>
     {% endblock %}

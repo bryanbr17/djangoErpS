@@ -62,7 +62,14 @@ def tecnico_detail(request, pk):
         'documentos': documentos,
         'vacaciones': vacaciones,
     }
-    return render(request, 'tecnicos/detail.html', context)
+    
+    # Determinar qué plantilla usar basado en si es una petición AJAX o no
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        template_name = 'tecnicos/partials/detalle_tecnico.html'
+    else:
+        template_name = 'tecnicos/detail.html'
+    
+    return render(request, template_name, context)
 
 @login_required
 def tecnico_create(request):
