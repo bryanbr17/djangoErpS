@@ -23,14 +23,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # Clave secreta desde variables de entorno
-SECRET_KEY = config('SECRET_KEY', default='django-insecure-%%&llwd2npcs8gbg!n=geimw76rlj+pzc942&nwgp^rqjr+#qq')
+SECRET_KEY = config(
+    'SECRET_KEY', default='django-insecure-%%&llwd2npcs8gbg!n=geimw76rlj+pzc942&nwgp^rqjr+#qq')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# Configuración de depuración
-DEBUG = config('DEBUG', default=False, cast=bool)
+# Configuración de depuración (temporalmente en True para ver errores)
+DEBUG = True
 
 # Configuración de hosts permitidos
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=lambda v: [s.strip() for s in v.split(',')])
+ALLOWED_HOSTS = ['*']  # Temporalmente permitir todos los hosts para pruebas
 
 
 # Application definition
@@ -95,20 +96,34 @@ WSGI_APPLICATION = 'erp_system.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'colaboradores1.0',
-        'USER': 'root',
-        'PASSWORD': '',  # XAMPP por defecto no tiene contraseña
-        'HOST': 'localhost',
-        'PORT': '3306',
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-            'charset': 'utf8mb4',
-        },
+import dj_database_url
+
+# Configuración de base de datos
+if os.environ.get('RENDER', '').lower() == 'true':
+    # Configuración para producción en Render
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=os.environ.get('DATABASE_URL'),
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
     }
-}
+else:
+    # Configuración para desarrollo local con XAMPP
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'colaboradores1.0',
+            'USER': 'root',
+            'PASSWORD': '',  # XAMPP por defecto no tiene contraseña
+            'HOST': 'localhost',
+            'PORT': '3306',
+            'OPTIONS': {
+                'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+                'charset': 'utf8mb4',
+            },
+        }
+    }
 
 
 # Password validation
@@ -145,25 +160,25 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
-STATICFILES_DIRS = [
-    BASE_DIR / 'static',
-]
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 # Media files
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# WhiteNoise configuration
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Login URLs
 LOGIN_URL = '/auth/login/'
 LOGIN_REDIRECT_URL = '/dashboard/'
-LOGOUT_REDIRECT_URL = '/auth/login/'
+{{ ... }}
 
 # Logout configuration
 LOGOUT_URL = '/auth/logout/'
