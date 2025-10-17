@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +22,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-%%&llwd2npcs8gbg!n=geimw76rlj+pzc942&nwgp^rqjr+#qq'
+# Clave secreta desde variables de entorno
+SECRET_KEY = config('SECRET_KEY', default='django-insecure-%%&llwd2npcs8gbg!n=geimw76rlj+pzc942&nwgp^rqjr+#qq')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# Configuración de depuración
+DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = []
+# Configuración de hosts permitidos
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=lambda v: [s.strip() for s in v.split(',')])
 
 
 # Application definition
@@ -93,7 +98,7 @@ WSGI_APPLICATION = 'erp_system.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'bryan111',
+        'NAME': 'colaboradores1.0',
         'USER': 'root',
         'PASSWORD': '',  # XAMPP por defecto no tiene contraseña
         'HOST': 'localhost',
