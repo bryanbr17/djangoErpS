@@ -10,7 +10,7 @@
     </div>
     <div class="flex-grow-1">
         <h4 class="mb-1">{{ tecnico.get_full_name }}</h4>
-        <p class="text-muted mb-2">{{ tecnico.cargo|default:"Técnico" }}</p>
+        <p class="text-muted mb-2">{{ tecnico.get_full_name|default:tecnico.usuario.get_full_name }}</p>
         <div class="d-flex gap-2">
             <span class="badge bg-{% if tecnico.estado == 'activo' %}success{% elif tecnico.estado == 'vacaciones' %}warning{% else %}secondary{% endif %} bg-opacity-10 text-{% if tecnico.estado == 'activo' %}success{% elif tecnico.estado == 'vacaciones' %}warning{% else %}secondary{% endif %}">
                 {{ tecnico.get_estado_display|default:"Inactivo" }}
@@ -23,9 +23,6 @@
     <div class="d-flex gap-2">
         <a href="{% url 'tecnicos:edit' tecnico.pk %}" class="btn btn-outline-primary btn-sm" data-bs-toggle="tooltip" title="Editar técnico">
             <i class="bi bi-pencil"></i> Editar
-        </a>
-        <a href="{% url 'tecnicos:vacaciones_create' tecnico.pk %}" class="btn btn-outline-success btn-sm" data-bs-toggle="tooltip" title="Solicitar vacaciones">
-            <i class="bi bi-calendar-plus"></i> Vacaciones
         </a>
     </div>
 </div>
@@ -59,50 +56,145 @@
 <div class="tab-content" id="tecnicoTabsContent">
     <!-- Pestaña de Información -->
     <div class="tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info-tab">
-        <div class="row">
-            <div class="col-md-6">
-                <div class="mb-3">
-                    <p class="mb-1 text-muted small">Código</p>
-                    <p class="mb-3">{{ tecnico.codigo_empleado|default:"No especificado" }}</p>
-                </div>
-                <div class="mb-3">
-                    <p class="mb-1 text-muted small">Email</p>
-                    <p class="mb-3">{{ tecnico.email|default:"No especificado" }}</p>
-                </div>
-                <div class="mb-3">
-                    <p class="mb-1 text-muted small">Teléfono</p>
-                    <p class="mb-3">{{ tecnico.telefono|default:"No especificado" }}</p>
-                </div>
-                <div class="mb-3">
-                    <p class="mb-1 text-muted small">Fecha de Nacimiento</p>
-                    <p class="mb-3">{{ tecnico.fecha_nacimiento|date:"d/m/Y"|default:"No especificada" }}</p>
-                </div>
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">Información Personal</h6>
             </div>
-            <div class="col-md-6">
-                <div class="mb-3">
-                    <p class="mb-1 text-muted small">Fecha de Ingreso</p>
-                    <p class="mb-3">{{ tecnico.fecha_ingreso|date:"d/m/Y"|default:"No especificada" }}</p>
-                </div>
-                <div class="mb-3">
-                    <p class="mb-1 text-muted small">Previsión</p>
-                    <p class="mb-3">{{ tecnico.prevision|default:"No especificada" }}</p>
-                </div>
-                <div class="mb-3">
-                    <p class="mb-1 text-muted small">AFP</p>
-                    <p class="mb-3">{{ tecnico.afp|default:"No especificada" }}</p>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <p class="mb-1 text-muted small">Código de Empleado</p>
+                            <p class="mb-3">{{ tecnico.codigo_empleado|default:"No especificado" }}</p>
+                        </div>
+                        <div class="mb-3">
+                            <p class="mb-1 text-muted small">RUT</p>
+                            <p class="mb-3">{{ tecnico.rut|default:"No especificado" }}</p>
+                        </div>
+                        <div class="mb-3">
+                            <p class="mb-1 text-muted small">Fecha de Nacimiento</p>
+                            <p class="mb-3">{{ tecnico.fecha_nacimiento|date:"d/m/Y"|default:"No especificada" }}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <p class="mb-1 text-muted small">Email</p>
+                            <p class="mb-3">{{ tecnico.usuario.email|default:"No especificado" }}</p>
+                        </div>
+                        <div class="mb-3">
+                            <p class="mb-1 text-muted small">Teléfono</p>
+                            <p class="mb-3">{{ tecnico.telefono|default:"No especificado" }}</p>
+                        </div>
+                        <div class="mb-3">
+                            <p class="mb-1 text-muted small">Teléfono de Emergencia</p>
+                            <p class="mb-3">{{ tecnico.telefono_emergencia|default:"No especificado" }}</p>
+                        </div>
+                    </div>
                 </div>
                 <div class="mb-3">
                     <p class="mb-1 text-muted small">Dirección</p>
-                    <p class="mb-3">{{ tecnico.direccion|default:"No especificada" }}</p>
+                    <p class="mb-0">{{ tecnico.direccion|default:"No especificada" }}</p>
                 </div>
             </div>
         </div>
-        
-        {% if tecnico.notas %}
-        <div class="card bg-light mt-3">
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">Información Laboral</h6>
+            </div>
             <div class="card-body">
-                <h6 class="card-title">Notas</h6>
-                <p class="card-text">{{ tecnico.notas|linebreaksbr }}</p>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <p class="mb-1 text-muted small">Puesto</p>
+                            <p class="mb-3">{{ tecnico.puesto|default:"No especificado" }}</p>
+                        </div>
+                        <div class="mb-3">
+                            <p class="mb-1 text-muted small">Departamento</p>
+                            <p class="mb-3">{{ tecnico.get_departamento_display|default:"No especificado" }}</p>
+                        </div>
+                        <div class="mb-3">
+                            <p class="mb-1 text-muted small">Ubicación</p>
+                            <p class="mb-3">{{ tecnico.get_ubicacion_display|default:"No especificada" }}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <p class="mb-1 text-muted small">Fecha de Ingreso</p>
+                            <p class="mb-3">{{ tecnico.fecha_ingreso|date:"d/m/Y"|default:"No especificada" }}</p>
+                        </div>
+                        <div class="mb-3">
+                            <p class="mb-1 text-muted small">Salario Base</p>
+                            <p class="mb-3">
+                                {% if tecnico.salario_base %}
+                                    ${{ tecnico.salario_base|floatformat:2 }}
+                                {% else %}
+                                    No especificado
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">Información de Previsión y AFP</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <p class="mb-1 text-muted small">Previsión de Salud</p>
+                            <p class="mb-3">{{ tecnico.get_prevision_display|default:"No especificada" }}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <p class="mb-1 text-muted small">AFP</p>
+                            <p class="mb-3">{{ tecnico.get_afp_display|default:"No especificada" }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if tecnico.especialidades.all %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">Especialidades</h6>
+            </div>
+            <div class="card-body">
+                <div class="d-flex flex-wrap gap-2">
+                    {% for especialidad in tecnico.especialidades.all %}
+                        <span class="badge bg-primary bg-opacity-10 text-primary">{{ especialidad.nombre }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if tecnico.linkedin %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">Perfil de LinkedIn</h6>
+            </div>
+            <div class="card-body">
+                <a href="{{ tecnico.linkedin }}" target="_blank" class="text-decoration-none">
+                    <i class="bi bi-linkedin me-2"></i>Ver perfil en LinkedIn
+                </a>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if tecnico.observaciones %}
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">Observaciones</h6>
+            </div>
+            <div class="card-body">
+                <p class="mb-0">{{ tecnico.observaciones|linebreaksbr }}</p>
             </div>
         </div>
         {% endif %}
@@ -110,12 +202,18 @@
     
     <!-- Pestaña de Documentos -->
     <div class="tab-pane fade" id="documentos" role="tabpanel" aria-labelledby="documentos-tab">
+        <!-- Contenedor para mensajes de alerta -->
+        <div class="alert-container mb-3"></div>
+        
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h6 class="mb-0">Documentos adjuntos</h6>
             <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#subirDocumentoModal">
                 <i class="bi bi-upload"></i> Subir documento
             </button>
         </div>
+        
+        <!-- Contenedor para mensajes de alerta -->
+        <div class="alert-container mb-3"></div>
         
         {% if documentos %}
             <div class="list-group">
@@ -131,9 +229,12 @@
                             <a href="{{ documento.archivo.url }}" class="btn btn-sm btn-outline-primary" download>
                                 <i class="bi bi-download"></i>
                             </a>
-                            <a href="#" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Estás seguro de que deseas eliminar este documento?')">
-                                <i class="bi bi-trash"></i>
-                            </a>
+                            <form action="{% url 'tecnicos:documento_delete' documento.id %}" method="post" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Estás seguro de que deseas eliminar este documento? Esta acción no se puede deshacer.')">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -194,31 +295,5 @@
     </div>
 </div>
 
-<!-- Modal para subir documento -->
-<div class="modal fade" id="subirDocumentoModal" tabindex="-1" aria-labelledby="subirDocumentoModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="subirDocumentoModalLabel">Subir documento</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form method="post" action="{% url 'tecnicos:documento_upload' tecnico.pk %}" enctype="multipart/form-data">
-                {% csrf_token %}
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="documentoNombre" class="form-label">Nombre del documento</label>
-                        <input type="text" class="form-control" id="documentoNombre" name="nombre" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="documentoArchivo" class="form-label">Archivo</label>
-                        <input class="form-control" type="file" id="documentoArchivo" name="archivo" required>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Subir</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+<!-- Incluir el modal de subir documento -->
+{% include 'tecnicos/partials/documento_upload.html' %}
